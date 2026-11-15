@@ -1,0 +1,1924 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+
+% Commads
+\newcommand{\gr}{\selectlanguage{greek}}
+\newcommand{\en}{\selectlanguage{english}}
+\newcommand{\iso}{\scaleobj{1.3}{\hspace{1pt}{\simeq} \hspace{2pt}}}
+\newcommand{\double}{\hspace{2pt}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+% Packages
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage[alphabetic,nobysame]{amsrefs}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{MnSymbol}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{physics}
+\renewcommand{\Tr}{\mathrm{Tr}}
+\DeclareMathOperator{\Rank}{rank}
+\DeclareMathOperator{\Null}{null}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\adj}{adj}
+\usepackage{scalerel}
+\usepackage{anyfontsize}
+\usepackage{mathrsfs}
+% Theorem envs (heading, then a line break)
+\newtheoremstyle{breakplain}{\topsep}{\topsep}{\itshape}{0pt}{\bfseries}{.}{\newline}{}
+\newtheoremstyle{breakdef}{\topsep}{\topsep}{\normalfont}{0pt}{\bfseries}{.}{\newline}{}
+\theoremstyle{breakplain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{prop}[theorem]{Proposition}
+\theoremstyle{breakdef}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{example}{Example}
+\newtheorem{ex}[subsubsection]{Exercise}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\setlength\parindent{0pt}
+
+
+% ---------- Cover settings (edit these) ----------
+\newcommand{\LeafletTitle}{Linear Algebra}
+\newcommand{\LeafletSubtitle}{Theorems and Problems for University Competitions}
+\newcommand{\LeafletTags}{SEEMOUS\quad{\Large\textperiodcentered}\quad IMC}
+\newcommand{\LeafletDate}{\the\year}
+\newcommand{\LeafletAuthor}{}
+
+% ---------- Colors (muted, so the title stays the main thing) ----------
+% Hilbert picture: accent (navy) -> plum -> pink -> soft red
+\definecolor{plum}{HTML}{6B3A7D}
+\definecolor{pink}{HTML}{D9547E}
+\definecolor{softred}{HTML}{C0392B}
+\definecolor{accent}{HTML}{1F3A5F}  % title
+
+% \CellColor{s}{t}: s = 0..18 position along the palette (navy -> plum -> pink -> red), t = strength in percent
+\newcommand{\CellColor}[2]{%
+  \ifnum#1<6
+    \pgfmathtruncatemacro{\mm}{round(100*(1-#1/6))}%
+    \colorlet{cell}{accent!\mm!plum!#2!white}%
+  \else\ifnum#1<12
+    \pgfmathtruncatemacro{\mm}{round(100*(1-(#1-6)/6))}%
+    \colorlet{cell}{plum!\mm!pink!#2!white}%
+  \else
+    \pgfmathtruncatemacro{\mm}{round(100*(1-(#1-12)/6))}%
+    \colorlet{cell}{pink!\mm!softred!#2!white}%
+  \fi\fi}
+
+% ---------- Cover ----------
+\newcommand{\makecover}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1.2cm}
+
+    {\fontsize{45}{44}\selectfont\bfseries\color{accent} \LeafletTitle}\\[0.8em]
+    {\Large\itshape \LeafletSubtitle}\\[1.8em]
+
+    {\color{accent}\rule{0.50\textwidth}{0.9pt}}\\[1.8em]
+
+    {\small\scshape\LeafletTags}
+
+    % background illustration: the 10x10 Hilbert matrix, shaded by the entries 1/(i+j-1).
+    % Strength follows the entry (it fades to white); the hue runs navy -> plum -> pink -> red along the diagonals.
+    \begin{tikzpicture}[remember picture, overlay]
+      \begin{scope}[shift={([yshift=-3.0cm]current page.center)}]
+        \def\c{0.8}% cell size in cm
+        \foreach \i in {1,...,10}{
+          \foreach \j in {1,...,10}{
+            \pgfmathsetmacro{\v}{1/(\i+\j-1)}
+            \pgfmathtruncatemacro{\s}{\i+\j-2}% 0 at the corner ... 18 at the far end
+            \pgfmathtruncatemacro{\t}{round(min(70,6+82*\v^0.6+24*sin(10*\s)))}% fade, plus a vibrance bump in the middle
+            \ifnum\s<6
+              \pgfmathtruncatemacro{\m}{round(100*(1-\s/6))}
+              \colorlet{cell}{accent!\m!plum!\t!white}
+            \else\ifnum\s<12
+              \pgfmathtruncatemacro{\m}{round(100*(1-(\s-6)/6))}
+              \colorlet{cell}{plum!\m!pink!\t!white}
+            \else
+              \pgfmathtruncatemacro{\m}{round(100*(1-(\s-12)/6))}
+              \colorlet{cell}{pink!\m!softred!\t!white}
+            \fi\fi
+            \fill[cell] ({(\j-5.5)*\c-0.5*\c+0.03},{-(\i-5.5)*\c-0.5*\c+0.03})
+              rectangle ++({\c-0.06},{\c-0.06});
+          }
+        }
+      \end{scope}
+    \end{tikzpicture}
+
+    % border: a hairline frame whose colour runs along the palette (navy -> plum -> pink -> red)
+    \begin{tikzpicture}[remember picture, overlay]
+      \begin{scope}[shift={(current page.south west)}]
+        \pgfmathsetmacro{\fw}{\paperwidth/1cm-1.6}   % frame width in cm
+        \pgfmathsetmacro{\fh}{\paperheight/1cm-1.6}  % frame height in cm
+        \pgfmathsetmacro{\fl}{0.8}                   % inset from the page edge in cm
+        \pgfmathsetmacro{\fr}{\fl+\fw}
+        \pgfmathsetmacro{\ft}{\fl+\fh}
+        \foreach \k in {0,...,96}{
+          \pgfmathtruncatemacro{\st}{round(18*0.5*\k/97)}
+          \pgfmathtruncatemacro{\sb}{round(18*(0.5*\k/97+0.5))}
+          \pgfmathsetmacro{\xa}{\fl+\fw*\k/97}
+          \pgfmathsetmacro{\xb}{\fl+\fw*(\k+1.03)/97}
+          \CellColor{\st}{92}
+          \draw[cell, line width=1.2pt] (\xa,\ft) -- (\xb,\ft);
+          \CellColor{\sb}{92}
+          \draw[cell, line width=1.2pt] (\xa,\fl) -- (\xb,\fl);
+        }
+        \foreach \k in {0,...,139}{
+          \pgfmathtruncatemacro{\sl}{round(18*0.5*\k/140)}
+          \pgfmathtruncatemacro{\sr}{round(18*(0.5*\k/140+0.5))}
+          \pgfmathsetmacro{\ya}{\ft-\fh*\k/140}
+          \pgfmathsetmacro{\yb}{\ft-\fh*(\k+1.03)/140}
+          \CellColor{\sl}{92}
+          \draw[cell, line width=1.2pt] (\fl,\ya) -- (\fl,\yb);
+          \CellColor{\sr}{92}
+          \draw[cell, line width=1.2pt] (\fr,\ya) -- (\fr,\yb);
+        }
+      \end{scope}
+    \end{tikzpicture}
+
+    \vfill
+
+    \leavevmode{\large \LeafletAuthor}\\[0.4em]
+    {\small \LeafletDate}
+    \vspace*{1.5cm}
+  \end{titlepage}
+  \setcounter{page}{1}
+}
+
+
+
+
+
+\begin{document}
+\makecover
+\tableofcontents
+\newpage
+\section{Vector spaces}
+\subsection{Vector spaces}
+\begin{definition}
+We call a set $V$ a \textit{Vector space} over a field $\mathbb{F}$ if there are two operations $+,\cdot$ such that any $v,w,u \in V$ and $a,b\in \mathbb{F}$ are subject to the following:
+\begin{itemize}
+    \item $v+(u+w)=(v+u)+w$.
+    \item $v+w=w+v$.
+    \item There is an element $0$ such that $v+0=v$ for all $v$.
+    \item There is an element $(-v)$ such that $v+(-v)=0$ for all $v$.
+    \item $a\cdot(b\cdot v)=(ab)\cdot v$.
+    \item $1\cdot v=v$.
+    \item $a\cdot (v+w)=a\cdot v+a\cdot w$.
+    \item $(a+b)\cdot v=a\cdot v+b\cdot v$.
+\end{itemize}
+we call the elements vectors and we formally denote the vector space as $(V,+,\cdot )$.
+\end{definition}
+\begin{example}
+Let $\mathbb{R}^2=\{(a,b)\double|\double a,b\in \mathbb{R}\}$ is an $\mathbb{R}$-vector space via the obvious addition and multiplication.
+\end{example}
+\begin{example}
+Let $\mathrm{C}[a,b]$ be the space of all continuous functions from $[a,b]$ to $\mathbb{R}$, this is an $\mathbb{R}$-vector space with the usual addition and multiplication.
+\end{example}
+\begin{example}
+    Let $\mathbb{C}$ be the complex numbers, they form both an $\mathbb{R}$ and $\mathbb{C}$ vector spaces with the usual operations.
+\end{example}
+\begin{example}
+    Let $\mathbb{C}[x]$ be the space of complex polynomials with coefficients in $\mathbb{C}$, this a $\mathbb{Q}$, $\mathbb{R}$ and $\mathbb{C}$ vector space.
+\end{example}
+\begin{example}
+    Let $\mathbb{R}[x]^d=\{p(x) \double | \double p(x) \text{ is a polynomial of degree less than or equal }d \}$, this too is an $\mathbb{R}$ vectors space.
+\end{example}
+\begin{example}
+    Let $ l^1(\mathbb{R})=\{ (a_n)_{n=0} \subset \mathbb{R} \double | \double \sum_{n=0}^\infty |a_n|< \infty \} $ is an $\mathbb{R}$ vector space.
+\end{example}
+\begin{example}
+    Let $l^2(\mathbb{R})=\{ a_n \double | \double \sum_{n=0}^\infty |a_n|^2 <\infty \}$ is an $\mathbb{R}$ vector space via the Cauchy-Schwarz inequality.
+\end{example}
+\begin{example}
+    Let $c=\{ (a_n)_n \subset \mathbb{R}\double | \double \lim_{n\to \infty}a_n= L\in \mathbb{R} \}$ is an $\mathbb{R}$ vector space with the usual addition and multiplication.
+\end{example}
+\begin{remark}
+    This can be simplified via the statement that, "$V$ is an abelian group that is acted upon by a field $\mathbb{F}$".
+\end{remark}
+\begin{definition}
+    Let $V$ be a vector space, we call a subset $W$ a \textit{vector subspace} if $W$ is a vector space with respect to the operations that make $V$ into a vector space we denote this by $W\leq V$.
+\end{definition}
+\begin{example}
+    Consider the space $W_0=\{ f\in \mathrm{C}[a,b] \double | \double f(\frac{a+b}{2})=0\}$, this constitutes a subspace of $\mathrm{C}[a,b]$, but the space $W_1=\{ f\in \mathrm{C}[a,b] \double | \double f(\frac{a+b}{2})=1\}$ does not.
+\end{example}
+\begin{example}
+   Let $\mathbb{R}[x]^{d-1}$ is a vector subspace of $\mathbb{R}[x]^d$ and of $\mathbb{R}[x]$, but not of $\mathbb{C}[x]$ or $\mathbb{C}[x]^d$.
+\end{example}
+\begin{example}
+    Let $V_1=\{ \lambda(1,1) \double | \double \lambda \in \mathbb{R}\}$, $V_2=\{ \lambda(1,0) \double | \double \lambda \in \mathbb{R}\}$ are both vector subspaces of $\mathbb{R}^2$ but $S_1=\{ (a,b) \double | \double a^2+b^2=1\}$ is not.
+\end{example}
+\begin{prop}
+    Let $V$ be a vector space, and $V_i$ be vector subspaces indexed over by $I$. The intersection $\bigcap_{i\in I} V_i$ is a vector subspace.
+\end{prop}
+\begin{remark}
+    Note that $I$ may be infinite.
+\end{remark}
+\begin{definition}
+    A finite subset of non-zero vectors $\{ v_1,\ldots v_n \}$ is called linearly dependent if there are some $a_1, \ldots , a_n \in \mathbb{F}$ with at least one non zero such that $\sum_{i=1}^na_iv_i=0$.
+\end{definition}
+\begin{definition}
+    A finite subset of non-zero vectors is called linearly independent if it is not linearly dependent.
+\end{definition}
+\begin{remark}
+Both linear dependence and independence generalize to infinite subsets by requiring that any finite subset is of the respective type.
+\end{remark}
+\begin{example}
+     Let $\mathcal{B}_1=\{ (1,0), (0,1),(1,1)\}$ is linearly dependent, $\mathcal{B}_2=\{ (1,0), (0,1),(1,2)\}$, $\mathcal{B}_3=\{ (0,1),(0,2)\}$ is too but $\mathcal{B}_4=\{ (0,1),(1,1)\}$ and $\mathcal{B}_5=\{ (1,0), (0,2)\}$ are not.
+\end{example}
+\begin{example}
+    The sets $\mathcal{B}_1=\{ x^2+x+1, x^2,1,x+2\}$ is linearly dependent but $\mathcal{B}_2=\{ x^3,x^2,x+1,2\}$ is not.
+\end{example}
+\begin{definition}
+    For any subset $\mathcal{B}$ of a vector space $V$ we can form the vector space $\langle \mathcal{B}\rangle_V=\bigcap_{\mathcal{B}\subset W \leq V} W$ meaning the least vector space that contains the set $\mathcal{B}$, from now on we will be dropping the subscript.
+\end{definition}
+\begin{definition}
+     For a finite subset of vectors $\mathcal{B}=\{ v_1,\ldots v_n \}$, we get that $\langle \mathcal{B}\rangle=\{ \sum_{i=1}^na_iv_i \double | \double a_i\in\mathbb{F}, \hspace{3pt} v_i\in \mathcal{B}\}$. Such an expression is called a linear combination of the vectors $v_1, \ldots v_n$.
+\end{definition}
+\begin{example}
+    The set $\mathcal{B}_1=\{ 1,i,2\}$ is a linearly dependent of $\mathbb{C}$ over both $\mathbb{R}$ and $\mathbb{C}$.
+\end{example}
+\begin{example}
+    The set $\mathcal{B}=\{ 1,i\}$ is linearly dependent over $\mathbb{C}$ but not over $\mathbb{R}$.
+\end{example}
+\begin{remark}
+    The above definition generalizes in the following.\\
+     Let $\mathcal{B}$ be a subset of $V$, $\langle \mathcal{B}\rangle_V=\{ \sum_{i\in I} a_iv_i \double | \double a_i\in \mathbb{F},  \hspace{3pt} v_i\in \mathcal{B},\hspace{3pt}I \text{ is finite}\}$. Meaning that it is the set of all finite linear combinations of vectors in $\mathcal{B}$.
+\end{remark}
+\begin{definition}
+     A subset of vectors $\mathcal{B}$ is called spanning if $\langle \mathcal{B}\rangle=V$.
+\end{definition}
+\begin{example}
+     Let $\mathcal{B}_1=\{ (1,0), (0,1),(1,1)\}$ and $\mathcal{B}_2=\{ (1,0), (0,1),(1,2)\}$. Both are spanning, but $\mathcal{B}_3=\{ (0,1),(0,2)\}$ is not.
+\end{example}
+\begin{example}
+    The sets $\mathcal{B}_1=\{ x^2+x+1, x^2,1,x+2\}$ is spanning over $\mathbb{R}[x]^2$ but not over $\mathbb{R}[x]$.
+\end{example}
+\begin{example}
+    The set $\mathcal{B}=\{ 1,i,2\}$ is a spanning of $\mathbb{C}$ over both $\mathbb{R}$ and $\mathbb{C}$.
+\end{example}
+\begin{example}
+    The set $\mathcal{B}$ is spanning over $\langle \mathcal{B}\rangle$.
+\end{example}
+\begin{definition}
+    A subset that is both spanning and linearly independent is called a basis.
+\end{definition}
+\begin{example}
+    The set $\mathcal{B}=\{(1,0),(0,1)\}$ is a basis of $\mathbb{R}^2$.
+\end{example}
+\begin{example}
+    The set $\mathcal{B}=\{ 1,i\}$ is a basis of $\mathbb{C}$ over $\mathbb{R}$ but not over $\mathbb{C}$.
+\end{example}
+\begin{example}
+    The set $\mathcal{B}=\{ x^2,x,1\}$ is a basis of $\mathbb{R}[x]^2$.
+\end{example}
+\begin{remark}
+    Such a base is called a Hamel base, using the axiom of choice we get that every vector space has a base that is not essentially finite.
+\end{remark}
+\begin{prop}
+    Any linearly independent set always extends to a base.
+\end{prop}
+\begin{definition}
+    We call the cardinality of a base of $V$ the dimension of $V$ denoted $\mathrm{dim}_\mathbb{F}(V)$, this need not be finite but is an invariant of $V$.
+\end{definition}
+\begin{remark}
+    If we were working over rings instead of fields then the cardinality of a base is not necessarily invariant, if it is such a ring is said to posses the Invariant Basis Number property abbreviated IBN.
+\end{remark}
+\begin{example}
+    The dimension of $\mathbb{R}^2$ and $\mathbb{C}$ is $2$ over $\mathbb{R}$, but $\mathbb{C}$ is of dimension $1$ over $\mathbb{C}$.
+\end{example}
+\begin{example}
+    The dimension of $\mathbb{C}[x]^2$ is $3$ over $\mathbb{C}$ but is $6$ over $\mathbb{R}$.
+\end{example}
+\begin{example}
+    The dimension of $\mathrm{C}[a,b]$ is infinite over $\mathbb{R}$.
+\end{example}
+\begin{definition}[*]
+    For any two vector spaces $V,W$ over the same field we may define a new space $V\times W$ that contains both as subspaces. This can be done via $V\times W=\{ (v,w) \double | \double v\in V, w\in W\}$ with addition and multiplication defined point wise, such a construction is called the external direct sum (or direct product) of the vector spaces, some may define $(av,bw)$ as $av+bw$ as a symbol called a formal combination and allow expressions of the form $w+\lambda v$ without causing problems.
+\end{definition}
+\begin{ex}
+    Let $V,W$ be vector spaces of finite dimension, find the dimension of $V\times W$.
+\end{ex}
+\begin{definition}[*]
+    For any two vector subspaces $V,W$ of $U$ we define $V+ W=\{ av+bw \double | \double v\in V, w\in W \double a,b\in \mathbb{F}\}$, or $V+W=\langle V \cup W\rangle_U$.
+\end{definition}
+\begin{ex}
+    Supposing that $U$ is of finite dimension prove that $\mathrm{dim}(U)=\mathrm{dim}(V)+\mathrm{dim}(W)-\mathrm{dim}(V\cap W)$
+\end{ex}
+\begin{definition}
+    If we have two subspaces $V,W$ of $U$ and $W\cap V=\{0\}$(the least possible) then we denote $V+W$ as $V\oplus W$ such a sum is called a direct sum.
+\end{definition}
+\begin{remark}
+    We may commonly denote $V\times W$ as $V\oplus W$, later on we will excuse this notation.
+\end{remark}
+\begin{ex}
+    Let $V$ be a vector space and $U,W$ two subspaces of same finite dimension, if $U\leq W$ then $U=W$.
+\end{ex}
+\newpage
+\subsection{Linear Functions}
+\begin{definition}
+     Let $V,W$ be vector spaces over some $\mathbb{F}$ and a function $f:V\to W$, if for any $v,u \in V$ and $a\in \mathbb{F}$ we have that $f(v+au)=f(v)+af(u)$ we will call the function linear. We denote the space of all linear functions from $V$ to $W$ as $\mathcal{L}(V,W)$.
+\end{definition}
+\begin{prop}
+    The zero map is linear meaning that $\mathcal{L}(V,W)$ is always non empty.
+\end{prop}
+\begin{prop}
+    The composition of two functions in $\mathcal{L}(V,V)$ is a linear function.
+\end{prop}
+\begin{ex}
+    Prove that the space $\mathcal{L}(V,W)$ is an $\mathbb{F}$ vector space.
+\end{ex}
+\begin{example}
+    The functions $f,g,h:\mathbb{R}^2\to \mathbb{R}^2$ defined by $f(x,y)=(y,x)$, $g(x,y)=(x,0)$, $h(x,y)=(2x+3y,x-13y)$ also $(g\circ f)(x,y)=(y,0)$ is linear  but $(x,y)\mapsto (x+x^3-y,y^6+2)$ is not.
+\end{example}
+\begin{example}
+    The functions $f,g,h:\mathbb{R}^2\to \mathbb{R}$ defined by $f(x,y)=x-2y$, $g(x,y)=x$, $h(x,y)=y$ are linear but $x\mapsto x^2$ is not.
+\end{example}
+\begin{example}
+    The function $f:\mathbb{R}[x]\to \mathbb{R}[x]$ defined by $p(x) \mapsto p'(x)$ is linear.
+\end{example}
+\begin{example}
+    The functions $F,G:\mathrm{C}[0,1]\to \mathbb{R}$ defined by $F(f)=\int_0^1 f(x) \mathrm{d}x$ and $G(f)=f(1/2)$ are both linear but $f\mapsto \int_0^1 f(x)^2 \mathrm{d}x$ is not.
+\end{example}
+\begin{example}
+    Let $c$ be the space of convergent real sequences, define $f:c\to c$ with $a_n \mapsto \frac{a_1+a_2+\cdots+a_n}{n}$, defines a linear function.
+\end{example}
+\begin{example}
+    The function $f:\mathcal{L}(V,V)\to \mathcal{L}(V,V)$ defined by $g\mapsto h\circ g$ or $g\mapsto g\circ h$ for some $h \in \mathcal{L}(V,V)$ is linear.
+\end{example}
+\begin{definition}
+    Let $V,W$ be two spaces and a linear function $f$ between them, this function defines two subspaces $\Ker(f)=\{x\double | \double f(x)=0 \}\leq V$ and $\mathrm{Im}(f)=\{y \double | \double y=f(x) \text{ for some }x \}\leq W$.
+\end{definition}
+\begin{ex}[Categorical definition of the kernel]
+Let $V,W$ be vector spaces and $f$ a linear function between them, then $\Ker(f)$ is the unique vector space such that there exists a linear function $i$ (think of it as an inclusion) such that  $f\circ i=0$ and for any other space $U$ and linear function $g$ such that $f \circ g=0$ there exists a unique function $h$ with the property $g=i\circ h$. This can be summed up in the following commutative diagram.
+\[\begin{tikzcd}
+	{\Ker(f)} & V & W \\
+	U
+	\arrow["i", from=1-1, to=1-2]
+	\arrow["f", from=1-2, to=1-3]
+	\arrow["{\exists !h}", dashed, from=2-1, to=1-1]
+	\arrow["g"', from=2-1, to=1-2]
+\end{tikzcd}\]
+    
+\end{ex}
+\begin{example}
+Let $f:\mathbb{R}[x]\to \mathbb{R}$ with $f(p(x))=p(1)$ then $\Ker(f)=\{ (x-1)q(x) \double | \double q(x)\in \mathbb{R}[x] \}$ and $\mathrm{Im}(f)=\mathbb{R}$.
+\end{example}
+\begin{example}
+Let $f:\mathbb{R}^2\to \mathbb{R}^2$ with $f(x,y)=(x-2y,0)$, then $\Ker(f)=\langle (2,1)\rangle$ and $\mathrm{Im}(f)=\langle (1,0)\rangle$.
+\end{example}
+\begin{ex}
+    Let $f:\mathbb{R}[x]\to \mathbb{R}^2$ with $f(p(x))=(p(1),p'(1))$, find in nice terms $\Ker(f)$.
+\end{ex}
+\begin{ex}
+    A linear function is 1-1 if and only if the kernel is trivial meaning $\Ker(f)=0$.
+\end{ex}
+\begin{theorem}[Rank-Nullity]
+    Let $f$ be a linear function between $V$ and $W$ with $V$ being of finite dimension, prove that $\mathrm{dim}(V)=\mathrm{dim}(\Ker(f))+\mathrm{dim}(\mathrm{Im}(f))$.
+\end{theorem}
+\begin{definition}
+    Two spaces $V,W$ are called isomorphic if there is a 1-1 and onto linear function from $V$ to $W$, denoted by $V\iso W$.
+\end{definition}
+\begin{prop}
+    This defines an equivalence relation in the space of all $\mathbb{F}$ vector spaces.
+\end{prop}
+\begin{prop}
+    Let $V$ be a vector space and $W,U$ two subspaces then there exists a linear function $\pi :W\times U\to W+U$ with $(w,u)\mapsto w+u$ such that if the sum is direct this is an isomorphism.
+\end{prop}
+The above means that if the sum is direct then we can break the space into smaller parts that are easier to work with.
+\begin{example}
+    $\mathbb{R}^2=\langle (1,0)\rangle \oplus\langle (0,1)\rangle\iso \mathbb{R} \times \mathbb{R}$.
+\end{example}
+\begin{example}
+    Let $\mathcal{B}=\{ \mathrm{sin}(x),\mathrm{cos}(x)\}$ and $W=\langle \mathcal{B}\rangle_{\mathrm{C}[0,1]}$, then $W\iso \mathbb{R}^2\iso \mathbb{R}\times\mathbb{R}$
+\end{example}
+\begin{example}
+    For any vector space $V$ over $\mathbb{F}$ of finite dimension $d$ we have that $V \iso \mathbb{F}^d$
+\end{example}
+\newpage
+\subsection{Inner Products}
+\begin{definition}
+    Let V be a complex vector space of dimension  $n$. An inner product is a  function $B:V\times V \to \mathbb{C}$ such that $B(\cdot,-)$ is linear in the first argument, $B(v,w)=\overline{B(w,v)}$, and $B(v,v)\geq 0$ with equality if and only if $v=0$. We will denote the standard inner product as $ v\cdot w$, and any other with $  \langle v,w\rangle$.
+\end{definition}
+\begin{example}
+    In $\mathbb{C}^n$ set $\langle (v_1,\ldots ,v_n),(w_1,\dots w_n)\rangle=\sum_{i=1}^nv_i\overline{w_i}$.
+\end{example}
+\begin{example}
+    In $\mathrm{C}[0,1]$ set $\langle f(x),g(x)\rangle=\int_0^1 f(x)g(x) \mathrm{d}x$.
+\end{example}
+\begin{example}
+    In $l^2(\mathbb{R})=\{ a_n \double | \double \sum_{n=0}^\infty |a_n|^2 <\infty \}$ set $\langle a_n,b_n\rangle=\sum_{n=0}^\infty a_nb_n$.
+\end{example}
+\begin{remark}
+    The general case is much much weirder and so we will skip it, some can be found in Berger \cites{Berger1,Berger2}, see also \cite{Kaplansky} for bilinear forms in general.
+\end{remark}
+\begin{prop}
+    Let $V$ be an inner product space and $W$ a subspace of $V$, then $W$ inherits an inner product from $V$ turning $W$ into an inner product space.
+\end{prop}
+\begin{definition}
+Two non zero vectors $v,w$ are called \textit{orthogonal} if $\langle v,w\rangle=0$, denoted by $v\perp w$.
+\end{definition}
+\begin{ex}
+    A list of pairwise orthogonal non-zero vectors is linearly independent.
+\end{ex}
+\begin{ex}
+    Let $x$ be a vector in an inner product space $V$, if $\langle x,v\rangle=0$ for all $v$ then $x$ is the zero vector.
+\end{ex}
+\begin{definition}
+    Let $W$ be a subspace of $V$, We define the set $W^{\perp}=\{v\double|\double\langle v,w\rangle=0\quad \forall w\in W\}$.
+\end{definition}
+\begin{prop}
+    Let $W\leq V$ then $W^\perp \leq V$ and if $V$ is of finite dimension $V=W\oplus W^\perp$.
+\end{prop}
+\begin{ex}
+    Prove that if $V$ is an inner product space and $W,U$ such that $W \leq U$ then $U^\perp \leq W^\perp$.
+\end{ex}
+\begin{ex}
+    Prove that if $V$ is an inner product space of finite dimension then $(W^\perp)^\perp=W$.
+\end{ex}
+\begin{prop}
+    Let $V$ be a space of finite dimension and $U,W\leq V$, then $(U+W)^\perp=U^\perp \cap W^\perp$ and $(U\cap W)^\perp=U^\perp+W^\perp$.
+\end{prop}
+\begin{definition}
+    A set of vectors $\mathcal{B}=\{ v_1,\dots v_n\}$ is called orthonormal if $\langle  v_i,v_j\rangle=\delta_{i,j}$.
+\end{definition}
+\begin{definition}
+    Let $f$ be an endomorphism of $V$ a complex vector space. Without much trouble we can define a unique function $f^*$ such that $\langle f(v),w\rangle=\langle v,f^*(w)\rangle$ for every pair of vectors $v,w$. We call $f^*$ the adjoint of $f$ and the matrix of $f^*$ is $A^*$ when the basis expressing $A$ is orthonormal.
+\end{definition}
+\begin{theorem}[Gram-Schmidt]
+For every Euclidean space of finite dimension n and any finite linearly independent list of vectors $\{v_1,\dots,v_k\}$ we can find a list of orthonormal vectors $\{w_1,\dots,w_k\}$ with the same span, meaning any $w_i$ is a linear combination of the $v_i$'s.
+\end{theorem}
+\begin{prop}
+    In a finite dimensional inner product space we can always find an orthonormal basis.
+\end{prop}
+\begin{ex}
+    Prove that $\Ker(f^*)=\mathrm{Im}(f)^\perp$ and $\mathrm{Im}(f^*)=\Ker(f)^\perp$.
+\end{ex}
+\newpage
+\section{Matrices}
+\begin{definition}
+	A matrix $A$ is a rectangular array of elements from a given field $\mathbb{F}$. They are used to model linear functions between vector spaces of finite dimension. 
+\end{definition}
+\begin{definition}
+	Let $A$ be a matrix in $\mathbb{M}_{n\cross m}(\mathbb{F})$ and $B$ a matrix in $\mathbb{M}_{m\cross k}(\mathbb{F})$ we define their product as a matrix $C$ in $\mathbb{M}_{n\cross k}(\mathbb{F})$ such that if $A=(a_{i,j})_{i,j}$ and $B=(b_{i,j})_{i,j}$ then $C=(c_{i,j})_{i,j}$ with $c_{i,j}=\sum_{r=1}^m a_{i,r}b_{r,j}$.
+\end{definition}
+There are other products defined on matrices but the above is the most natural and useful. Other products will be investigated later. 
+We cannot multiply matrices that are not of the above form.
+We consider vectors to be matrices in $\mathbb{M}_{n\cross 1}(\mathbb{F})$.
+A nice way of looking at matrices is to consider the rows or columns as vectors, with this in mind try to explain the matrix multiplication as a special way of combining such vectors.
+\begin{definition}
+	A square matrix $D=(d_{i,j})_{i,j}$ is called diagonal if $d_{i,j}=0$ whenever $i\neq j$.
+\end{definition}
+\begin{definition}
+	Let $A=(a_{i,j})_{i,j}$ be a matrix in $\mathbb{M}_{n\cross m}(\mathbb{C})$. we define the \textit{conjugate matrix} as a matrix $\overline{A}$ in $\mathbb{M}_{n\cross m}(\mathbb{C})$ with $\overline{A}=(\overline{a_{i,j}})_{i,j}$.
+
+\end{definition}
+\begin{example}
+    Let $A=\begin{bmatrix}
+        1 & 2 \\
+        i & 2-3i
+    \end{bmatrix}$ then $\overline{A}=\begin{bmatrix}
+        1 & 2 \\
+        -i & 2+3i
+    \end{bmatrix}$, $X=\begin{bmatrix}
+        6-7i \\ 3+i \\ 2-i \\ 5
+    \end{bmatrix}$ then $\overline{X}=\begin{bmatrix}
+        6+7i \\ 3-i \\ 2+i \\ 5
+    \end{bmatrix}$.
+\end{example}
+
+\begin{definition}
+	Let $A$ be a matrix in $\mathbb{M}_{n\cross m}(\mathbb{F})$, we define the \textit{transpose} of a matrix the matrix $A^T$ in $\mathbb{M}_{m\cross n}(\mathbb{F})$ such that if $A=(a_{i,j})_{i,j}$ then $A^T=(a_{j,i})_{i,j}$.
+\end{definition}
+
+\begin{example}
+    Let $A,X$ as before then $A^T=\begin{bmatrix}
+        1 & i \\
+        2 & 2-3i
+    \end{bmatrix}$ and $X^T=\begin{bmatrix}
+        6-7i & 3+i & 2-i & 5
+    \end{bmatrix}$.
+\end{example}
+
+\begin{definition}
+	Let $A$ be a matrix in $\mathbb{M}_{n\cross m}(\mathbb{C})$. We define the \textit{conjugate transpose} as the matrix $A^*=\overline{A^T}=\overline{A}^T$.	
+\end{definition}
+\begin{prop}
+ Let $A\in \mathbb{M}_{n\times m}(\mathbb{F})$ and $B \in  \mathbb{M}_{m\times k}(\mathbb{F})$. If we represent $A$ and $B$ in the following we get a simple way of calculating $AB$.\\
+ 
+ 
+$$A = \begin{bmatrix} 
+\text{---} & v_1 & \text{---} \\ 
+\text{---} & v_2 & \text{---} \\ 
+& \vdots & \\ 
+\text{---} & v_n & \text{---} 
+\end{bmatrix}, \quad
+B = \begin{bmatrix} 
+\mid & \mid & & \mid \\ 
+w_1 & w_2 & \dots & w_k \\ 
+\mid & \mid & & \mid 
+\end{bmatrix}$$ where $v_i$ are the row vectors of $A$ and $w_i$ are the column vectors of $B$. $$AB = \begin{bmatrix} 
+v_1 w_1 & v_1 w_2 & \dots & v_1 w_k \\ 
+v_2 w_1 & v_2 w_2 & \dots & v_2 w_k \\ 
+\vdots & \vdots & \ddots & \vdots \\ 
+v_n w_1 & v_n w_2 & \dots & v_n w_k 
+\end{bmatrix}$$ \\
+\end{prop}
+\begin{remark}
+   We consider $1\times 1$ matrices as elements of the field meaning if $v=\begin{bmatrix}
+       1& 2 & 3
+   \end{bmatrix} $ and $w=\begin{bmatrix}
+       2 \\1 \\-1
+   \end{bmatrix}$ then $vw=[2+2-3]=[1]= 1$.
+\end{remark}
+\begin{definition}
+	A matrix $A\in	\mathbb{M}_{n\times n}(\mathbb{F})$  is \textit{invertible} if there is a matrix $B\in \mathbb{M}_{n\times n}(\mathbb{F})$ such that $AB=BA=I_n$.
+We denote such a matrix $A^{-1}$. The set of all invertible matrices of dimension $ n $ over a field $ \mathbb{F} $ is denoted by $ \mathrm{GL}(n,\mathbb{F}) $.
+\end{definition}
+
+\begin{remark}
+    Notice that we cannot define inverses for non square matrices, this is a fact about fields that is called the \textit{Invariant Basis Number} property that states that if ${R}^n\simeq {R}^m$ then $n=m$ here $n,m$ are allowed to be cardinals, for more info consult \href{https://en.wikipedia.org/wiki/Invariant_basis_number}{[IBN]}.
+\end{remark}
+\begin{prop}
+    Let $A,B\in \mathbb{M}_n(\mathbb{F})$ such that $AB=I$, then $BA=I$ and $B=A^{-1}$.
+\end{prop}
+\begin{remark}
+    This is another fact that is native to fields and more specifically to rings possessing the \textit{Stably Finite} property, a property that is a little stronger that the IBN, for more info consult \href{https://en.wikipedia.org/wiki/Stably_finite_ring}{[Stably Finite]}.\\
+    Also check out the definition of a  \textit{Direct Finite} ring \href{https://en.wikipedia.org/wiki/Dedekind-finite_ring}{[Direct Finite]}.
+\end{remark}
+\begin{prop}
+       The following are equivalent.
+       \begin{itemize}
+       	\item $A$ is invertible. 
+       	\item There is no non zero vector $v$ such that $Av=0$.
+\end{itemize}
+\end{prop}
+
+Here we provide a list of special square matrices, we will not bother with the general case so in the following take $A$ to be a matrix over $\mathbb{C}$.
+\begin{itemize}
+	\item Symmetric $A=A^T$ 
+	\item Anti-Symmetric $A=-A^T$ 
+	\item Orthogonal $A^{-1}=A^T$ 
+	\item Hermitian $A=A^*$ 
+	\item Anti-Hermitian $A=-A^*$ 
+	\item Unitary $A^{-1}=A^*$ 
+	\item Normal $AA^*=A^*A$ 
+	\item Idempotent $A^2=A$
+	\item Nilpotent $A^r=O$ for some $r\in \mathbb{N}$
+	\item Involutory $A^2=I$ 
+\end{itemize}
+
+
+
+\begin{definition}
+	Two matrices $A,B$ are called \textit{similar} if there exists an invertible matrix $ U $ such that $A=U^{-1}BU$, if the matrices are in $\mathbb{M}_n(\mathbb{C})$ and the matrix $U$ is unitary then we call $A$ and $B$ \textit{unitarily similar}, such $U$ is called a transition matrix. We denote similarity by $A \sim B$.
+\end{definition}
+\begin{remark}
+	This means that the matrices $A$ and $B$ represent the same linear function on $V$ with respect to different bases. 
+\end{remark}
+\begin{definition}
+	Two matrices $A,B$ are called equivalent if there are two invertible matrices $U,V$ such that $A=U^{-1}BV$.
+\end{definition}
+\begin{remark}
+	This definition can work over non square matrices and can be thought of as a weaker version of similarity.
+\end{remark}
+
+\begin{definition}
+	A matrix $A$ is called \textit{diagonalizable} if $A$ is similar to a diagonal matrix, if the transition matrix happens to be unitary then we call $A$ \textit{unitarily diagonalizable}.	
+\end{definition}
+\begin{definition}
+    For any two matrices $A,B\in \mathbb{M}_n(\mathbb{F})$ we denote $AB-BA$ as $[A,B]$ this is called the \textit{Commutator} of $A$ and $B$.
+\end{definition}
+The commutator is used to measure the extent of commutativity between two matrices.
+\begin{prop}
+    For matrices $A,B,C\in \mathbb{M}_n(\mathbb{F})$ and $x,y \in \mathbb{F}$ we get
+    \begin{itemize}
+        \item $[A,A]=O$
+        \item $[A,O]=[A,I]=O$
+        \item $[A,B]=-[B,A]$
+        \item $[A+C,B]=[A,B]+[C,B]$
+        \item $[x A,y B]=xy[A,B]$
+        \item $[A,[B,C]]+[B,[C,A]]+[C,[A,B]]=0$  \textup{(Jacobi Identity)}
+        \end{itemize}
+\end{prop}
+\begin{remark}
+    Functions subject to the above are called antisymmetric bilinear maps and enjoy use in Lie algebras,differential geometry and physics. 
+\end{remark}
+\newpage
+\subsection{Exercises}
+\begin{ex}
+Show that similarity of matrices defines an equivalence relation on the set of matrices, this justifies the notation $ A \sim B $.
+\end{ex}
+\begin{ex}
+Prove or disprove the following: If $A,B \in \mathrm{GL}(n,\mathbb{C})$ then so is $AB$, what about $BA$?
+\end{ex}
+\begin{ex}
+	Prove or disprove the following: If $A,B \in \mathrm{GL}(n,\mathbb{C})$ then so is $ A+B $.
+\end{ex}
+\begin{ex}
+Let $A$ be a square matrix such that $ A^2=A $ is $A$ invertible? What if $ A^2=O $.
+\end{ex}
+\begin{ex}
+	Let $A$ be a square matrix such that $A^{5} - A^{4} + 4A^{2}+ \pi I=O$, is $A$ invertible? If so express its inverse as a polynomial in $A$.
+
+\end{ex}
+\begin{ex}
+Let $ A $ be a square matrix and $ B $ such that $ A\sim B $. Suppose that $ A^7-3A^4+A^2-2A=O $, find a polynomial that zeros $B$, meaning $ P(B)=0 $.
+\end{ex}
+\begin{ex}
+Let $A$ be a square matrix and $B$ such that $ A \sim B $. Suppose $A$ is invertible, is $ B $ invertible?
+\end{ex}
+\begin{ex}
+   Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $AB=BA$ and $B$ is invertible prove that $AB^{-1}=B^{-1}A$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $AP(B)=B$ with $P(B)$ a polynomial with $P(0)\neq0$. Prove that $AB=BA$.
+\end{ex}
+\begin{ex}[\cite{Z3}*{Ex 2.4.9}]
+Assuming that all matrix inverses involved below exist, show that:
+$$(A-B)^{-1}=A^{-1}+A^{-1}(B^{-1}-A^{-1})^{-1}A^{-1}.$$
+and derive the following
+\begin{itemize}
+    \item $(I-BA)^{-1}=I+B(I-AB)^{-1}A$.
+    \item $(A+I)^{-1}=I-(A^{-1}+I)^{-1}$.
+    \item $\det((I-A)^{-1}+(I-A^{-1})^{-1})=1$
+\end{itemize}
+\end{ex}
+\begin{ex}[\cite{GA17}*{Ex 280}]
+	Let $A$ be a square matrix and $ k $ a positive integer such that $ kA^{k+1}=(k+1)A^k $. Prove that the matrix $ A-I $ is invertible and express its inverse in $A$.
+\end{ex}
+\begin{ex}[\cite{GA17}*{Ex 281}]
+	Let $ A $ be a square invertible matrix of dimension $n$, let $ B=XY $, where $X$ and $Y$ are $n\times 1$ and $1\times n$ matrices respectively. Prove that $A+B$ is invertible iff $a=YA^{-1}X\neq -1$, and in this case its inverse is given by $$(A+B)^{-1}=A^{-1}-\frac{1}{a+1}A^{-1}BA^{-1}$$
+\end{ex}
+\begin{ex}
+    Let $A,B$ be square matrices such that $A+B=AB$ show that $AB=BA$.
+\end{ex}
+\begin{ex}[\cite{GA17}*{Ex 283}]
+Let $A,B$ be square matrices such that $ AB-B^2A^2=I $ and $ A^3+B^3=O $. \\Prove that $ BA-A^2B^2=I $.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{R})$ such that they are both symmetric with non negative eigenvalues. Prove that $A^3+B^3=(A+B)^3\iff AB=O$.
+\end{ex}
+\newpage
+\section{Trace and Determinant}
+\subsection{Definitions}
+\begin{definition}
+	Let $ A $ be a square matrix over a field $ \mathbb{F} $, we define its trace as the sum of its diagonal elements denoted by $ \Tr(A)$.
+\end{definition}
+\begin{example}
+    $A=\begin{bmatrix}
+        2 & 3\\
+        5 & 7
+    \end{bmatrix}$ then $\Tr(A)=2+7=9$, if $I_3=\begin{bmatrix}
+        1 & 0 & 0 \\ 0& 1 & 0 \\ 0 & 0 & 1
+    \end{bmatrix}$ then $\Tr(I_3)=1+1+1=3$.
+\end{example}
+\begin{prop}For $A,B \in \mathbb{M}_{n}(\mathbb{F})$ and $\lambda\in\mathbb{F}$
+    \begin{itemize}
+        \item $ \Tr(A)\in \mathbb{F}$
+        \item $\Tr(A+\lambda B)=\Tr(A)+\lambda \Tr(B)$
+        \item $ \Tr(AB)=\Tr(BA)$
+        \item $ \Tr(A^T)=\Tr(A)$
+        \item If $A\in\mathbb{M}_{n}(\mathbb{C})$ then $\Tr(\overline{A})=\overline{\Tr(A)}$
+    \end{itemize}
+\end{prop}
+\begin{definition}
+	Let $ A $ be a square matrix over a field $ \mathbb{F} $, we define its determinant as $ \det(A) $, where $ \det(\cdot) $ is the only multilinear alternating functional such that $ \det(I_n)=1 $.
+\end{definition}
+Unpacking the definition gets us that
+\begin{itemize}
+
+	\item $ \det(\begin{bmatrix}
+	\vert& \vert& \ldots & \vert\\
+	v+w& v_2 &\ldots & v_n\\
+	\vert& \vert& \ldots &\vert
+\end{bmatrix}) = \det(\begin{bmatrix}
+	\vert& \vert& \ldots &\vert\\
+	v& v_2 &\ldots & v_n\\
+	\vert& \vert& \ldots &\vert
+\end{bmatrix}) +\det(\begin{bmatrix}
+	\vert& \vert& \ldots &\vert\\
+	w& v_2 &\ldots & v_n\\
+	\vert& \vert& \ldots &\vert
+\end{bmatrix}) $
+\item$ \det(\begin{bmatrix}
+	\vert &\vert &\ldots &\vert\\
+	v_1& v_2 &\ldots & v_n\\
+	\vert &\vert &\ldots &\vert
+\end{bmatrix}) = (-1)\det(\begin{bmatrix}
+	\vert&\vert & \ldots &\vert\\
+	v_2& v_1 &\ldots & v_n\\
+	\vert&\vert &\ldots &\vert
+\end{bmatrix})
+$
+\item $ \det(\begin{bmatrix}
+	\vert& \vert& \ldots & \vert\\
+	\lambda v_1& v_2 & \ldots & v_n\\
+	\vert& \vert& \ldots & \vert
+\end{bmatrix}) = \lambda\det(\begin{bmatrix}
+	\vert& \vert& \ldots & \vert\\
+	v_1& v_2 & \ldots & v_n\\
+	\vert& \vert& \ldots & \vert
+\end{bmatrix})$ for $\lambda\in\mathbb{F}$
+
+\end{itemize}
+The following properties will be most useful.
+\begin{prop}For $A,B \in \mathbb{M}_{n\times n}(\mathbb{F})$ we have
+\begin{itemize}
+	\item $ \det(A)\in \mathbb{F} $
+	\item $\det(\lambda A)=\lambda^n \det(A)$
+	\item $ \det(AB)=\det(A)\det(B) $
+	\item $ A \in \mathrm{GL}(n,\mathbb{F}) \iff \det(A)\neq 0$ and $\det(A^{-1})={1}/{\det(A)}$.
+	\item $ \det(A^{T})=\det(A) $
+	\item If $ A\in \mathbb{M}_{n\times n}(\mathbb{C}) $ then $ \det(\overline{A})=\overline{\det(A)} $
+	\item $ \det(A)=\sum_{\sigma \in S_n}\epsilon(\sigma)\prod_{1\leq i \leq n}a_{i,\sigma(i)} $
+\end{itemize}
+\end{prop}
+\begin{remark}
+Note the fact that if a matrix is of rational coefficients or real coefficients then the same can be said about its trace and determinant, this will give some powerful restrictions on such matrices that will be explored later on.
+\end{remark}
+\begin{remark}
+As an exercise one can check that the trace and the determinant are both invariant under conjugation, meaning that they are independent of base and so we can speak of the trace and the determinant of an endomorphism.
+\end{remark}
+\begin{definition}
+    Let $A\in \mathbb{M}_n(\mathbb{F})$, denote $A_i,j$ the $n-1$ dimensional square matrix that is 
+    made by removing the $i-th$ row and $j-th$ column of $A$. Consider the matrix $\adj(A)=((-1)^{i+j}\det(A_i,j))_{i,j}$, we call this matrix the \textit{adjoint} matrix of $A$.
+\end{definition}
+\begin{prop}
+    For $A\in \mathbb{M}_n(\mathbb{F})$ with $n\geq 2$:
+    \begin{itemize}
+        \item $A\adj(A)=\adj(A)A=\det(A)I$, so $A^-1 = \frac{1}{\det(A)}\adj(A)$ when $\det(A)\neq 0$.
+        \item $\det(\adj(A))=\det(A)^{n-1}$.
+        \item $\adj(AB)=\adj(B)\adj(A)$.
+    \end{itemize}
+\end{prop}
+\begin{remark}
+    Notice that the if a matrix $A$ has integer entries then so will it's adjoint.
+\end{remark}
+\subsection{Special Determinants}
+\begin{prop}[Sarrus]
+    For $A\in \mathbb{M}_3(\mathbb{F})$ of the form $A=\begin{bmatrix}
+        a_1 & a_2 & a_3 \\
+        b_1 & b_2 & b_3 \\
+        c_1 & c_2 & c_3 \\
+    \end{bmatrix}$ we get that $\det(A)=a_1b_2c_3 + a_2b_3c_1+a_3b_1c_2-a_1b_3c_2 - a_2b_1c_3-a_3b_2c_1$.
+\end{prop}
+
+\begin{prop}[Vandermonde Determinant]\label{VD}
+Let $A=\begin{bmatrix}
+	1 & 1 &\cdots & 1 \\
+	x_1 & x_2 & \cdots & x_n\\ 
+	x_1^2 & x_2^2 & \cdots & x_n^2 \\ 
+	\vdots & \vdots & \ddots & \vdots \\ 
+	x_1^{n-1} & x_2^{n-1}& \cdots & x_n^{n-1}\\
+\end{bmatrix}$ then $\det(A)=\prod_{1\leq i < j \leq n} (x_j-x_i)$.
+\end{prop}
+\begin{prop}[Cauchy Determinant] 
+    Let $A=(\frac{1}{x_i-y_j})_{i,j}$ with $x_i,y_i$ such that this is well defined. Then
+    \[\det(A)=\frac{\prod_{i=2}^n\prod_{j=1}^{i-1}(x_i-x_j)(y_j-y_i)}{\prod_{i=1}^n\prod_{j=1}^n(x_i-y_j)}.\]
+\end{prop}
+The special case $x_i-y_j=i+j-1$ is the Hilbert matrix that is closely related to the Hilbert inequality for sequences.
+\begin{prop}[Circulant Determinant]
+Let $C$ of the following form .\[
+	\begin{bmatrix}
+		c_0 & c_{n-1} & \cdots & c_2 & c_1\\
+		c_1 & c_0 & \cdots & c_3 & c_2\\
+		c_2 & c_1 &\vdots &\vdots & \vdots\\
+		\vdots & \vdots & \vdots & \ddots & \vdots \\
+		c_{n-1} & c_{n-2} & \cdots & c_1 & c_0\\
+	\end{bmatrix}
+\]
+We call such matrix a \textit{Circulant Matrix} and $\det(C)=\prod_{j=0}^{n-1}(c_0+c_1 \omega^j+c_2 \omega^{2j}+ \cdots +c_{n-1}\omega^{(n-1)j})$ where $\omega$ is a primitive $n$-th root $(\omega=e^{\frac{2\pi i}{n}})$.
+\end{prop}
+\begin{remark}
+    Such matrix appear in the theory of (DFT) Discrete Fourier Transform.
+\end{remark}
+\begin{prop}
+    Let $J_n=\begin{bmatrix}
+        1 & \cdots & 1 \\
+        \vdots & \ddots & \vdots \\
+        1 & \cdots &  1
+    \end{bmatrix}$. For $a,b \in \mathbb{C}$ consider the matrix $A=aI_n+bJ_n=\begin{bmatrix}
+        a+b & b & \cdots & b \\
+        b & a+b & \cdots & b \\
+        b & \cdots & \ddots & \vdots \\
+        b & b & \cdots & a+b \\
+    \end{bmatrix}$, then $\det(A)=a^{n-1}(a+nb)$.
+\end{prop}
+\begin{prop}[Smith Determinant]
+    Let $A=(\gcd(i,j))_{i,j}$ then $\det(A)=\prod\limits_{k=1}^n \phi(k)$.
+\end{prop}
+\newpage
+
+
+
+\newpage
+\subsection{Exercises}
+\begin{ex}
+	Let $A,B$ be square matrices.\\ Prove that $ \Tr(AB)=\Tr(BA) $, so $[A,B]$ is always of trace $0$.
+\end{ex}
+\begin{ex}[*]
+    Let $\mathscr{C}=\langle\{ [A,B] \double | \double A,B \in \mathbb{M}_n(\mathbb{C})\}\rangle$. Prove the following: \begin{itemize}
+        \item $\mathscr{C}$ is a vector subspace of $\mathbb{M}_n(\mathbb{C})$, calculate its dimension.
+        \item $\mathscr{C}=\Tr^{-1}(0)$, So this is a manifold!.
+        \item\textup{(Shoda's Theorem)}*  Every matrix in $\mathscr{C}$ is of the form $[A,B]$ for some $A,B\in \mathbb{M}_n(\mathbb{C})$.
+    \end{itemize}
+\end{ex}
+\begin{ex}
+    Let $A,B$ be two similar matrices prove that they have the same trace.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be square matrices.\\ Prove or disprove that $ \Tr(AB)=\Tr(A)\Tr(B) $.
+\end{ex}
+\begin{ex}
+    Prove that there are no $A,B\in \mathbb{M}_n(\mathbb{C})$ with $AB-BA=I$.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be square matrices.\\ Prove that $|\Tr(A^*B)|^2 \leq |\Tr(A^*A)||\Tr(B^*B)|$.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be square matrices.\\ Prove or disprove $ \det(A+B)=\det(A) + \det(B) $.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be invertible square matrices of odd dimension. Prove that $ AB+BA \neq O $.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be real commuting matrices. Prove that $ \det(A^2+B^2)\geq 0 $.
+\end{ex}
+\begin{ex}
+	Let $ A,B $ be real matrices of odd dimension such that $ A^2 + B^2 = O $. Prove that $ [A,B]=AB-BA $ is not invertible.
+\end{ex}
+\begin{ex}
+	Prove proposition \ref{VD}.
+\end{ex}
+\begin{ex}
+    Compute $\det(\min(i,j)_{i,j})$ and $\det(|i-j|_{i,j})$.
+\end{ex}
+\begin{ex}
+	Let $ A,B,C,D $ be real matrices such that $ AC-BD=I $ and $ AD+BC=O $. Prove that\begin{itemize}
+		\item $ CA-DB=I $ and $ DA+CB=O $
+		\item $ \det(AC)\geq 0 $ and $ (-1)^n\det(BD)\geq 0 $
+	\end{itemize}
+\end{ex}
+\begin{ex}[\href{https://cdn.artofproblemsolving.com/attachments/6/b/7602596bee912ae3a5085a745ca110424c39d2.pdf}{VRChat Femboy Math Dec 2024}]
+	Let $ B $ be a square matrix of dimension 2024 defined as $B=(1-\delta_{i,j})_{i,j}$ compute the determinant of $ B^{-1} $.
+\end{ex}
+\begin{ex}[\cite{GA17}*{Ex 255}]
+    Let $f$ be a linear functional from $\mathbb{M}_{n \times n}(\mathbb{R}) \to \mathbb{R}$. Prove that $f(X)=\Tr(XC)$ for some $C$, if $f(XY)=f(YX)$ then $C=\lambda I$
+\end{ex}
+\begin{ex}[*]
+Let $S_n$ denote the $n$-th symmetric group, and for a given $\sigma \in S_n$ let $\nu(\sigma)$ denote the number of fixed points of $\sigma$. Compute : $\sum_{\sigma \in S_n}\frac{\epsilon(\sigma)}{\nu(\sigma)+1}$
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{Z})$. Prove that the inverse has integer entries iff $\det(A)=\pm1$.
+\end{ex}
+\begin{ex}
+    Let $A,P\in \mathbb{M}_n(\mathbb{Z})$ with $\det(P)\neq 0$ and $\det(A)=1$. Prove that some power of the matrix $B=P^-1 A P$ has integer entries. 
+\end{ex}
+\newpage
+
+\section{Rank inequalities and subspace inclusions}
+This section will be dedicated to rank inequalities that are naturally related to inclusions of subspaces of the given vector space, namely the kernel and the image of a map.
+\begin{definition}
+    The rank of a matrix is the dimension of its image. We also give a 
+    special name to $\dim\Ker(A)$ naming it the nullity of A and denoting it by $\Null(A)$.
+\end{definition}
+\begin{example}
+    $A=\begin{bmatrix}
+        1 & 0 & 0\\0 & 1 & 0\\ 0& 0 & 0
+    \end{bmatrix}$ then $\Rank(A)=2$ and $\Null(A)=1$, same goes for $B=\begin{bmatrix}
+        4 & 3 & 7\\0 & 2 & 10\\ 0& 0 & 0
+    \end{bmatrix}$.
+\end{example}
+\begin{prop}
+    For any matrix $A\in \mathbb{M}_{n\times m}(\mathbb{F})$,  $\Rank(A)+\Null(A)=m$.
+\end{prop}
+\begin{prop}
+    For any matrix $A\in \mathbb{M}_{n\times m}(\mathbb{F})$, $\Rank(A)\leq \min(n,m)$.
+\end{prop}
+\begin{prop}
+    The rank of a matrix can be defined as the largest size sub matrix of non zero determinant, implying that if a matrix is of rank k then every k+1 sub matrix will have determinant 0.
+\end{prop}
+It is clear that the sum of the rank and the nullity of a matrix will equal the dimension of the whole space.
+\begin{prop}
+    For $A,B\in\mathbb{M}_{n\times n}(\mathbb{F})$ we have that $\Rank(AB)\leq \mathrm{min}(\Rank(A),\Rank(B))$, If either one is invertible the inequality becomes equality but the converse is not true.
+\end{prop}
+\begin{remark}
+    The rank of a matrix is invariant under conjugation so we can speak of the rank and the nullity of an endomorphism.
+\end{remark}
+\begin{prop}
+   For two matrices $A,B \in\mathbb{M}_{n\times k}$ we get that $\Ker(A)\cap \Ker(B)\subseteq \Ker(A+B)$.
+\end{prop}
+\begin{prop}
+    For $A,B\in\mathbb{M}_{n\times n}(\mathbb{F})$ we have that $\Rank(A+B)\leq 
+    \Rank(A)+\Rank(B)$
+\end{prop}
+\begin{theorem}[Frobenius' Inequality]
+    For any three matrices $A,B,C$ such that $ABC$ is well defined we have that $\Rank(ABC)+\Rank(B)\geq \Rank(AB)+\Rank(BC)$.
+\end{theorem}
+\begin{corollary}[Sylvester's Inequality]
+For two matrices $A\in\mathbb{M}_{n\times k}(\mathbb{F})$ and $B\in\mathbb{M}_{k\times m}(\mathbb{F})$ one has that $\Rank(AB)+k\geq \Rank(A)+\Rank(B)$.
+\end{corollary}
+\begin{corollary}[Sylvester's Inequality In Kernel Form]
+    For two matrices $A\in\mathbb{M}_{n\times n}(\mathbb{F})$ and $B\in\mathbb{M}_{n\times n}(\mathbb{F})$ one has that $\Null(AB)\leq \Null(A)+\Null(B)$.
+\end{corollary}
+Note that this is just an application of the prior theorem. In most contests Sylvester's theorem is the more useful version. The above theorems can be generalized to arbitrarily many matrices but it would be difficult to find any application in a contest setting, the interested reader can find more in \cite{T}.
+\begin{prop}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ be such that $A^2=A$ then $\Tr(A)=\Rank(A)$.
+\end{prop}
+\begin{prop}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ then $\Rank(AB)=\Rank(B)-\dim(\Ker(A)\cap \mathrm{Im}(B))$.
+\end{prop}
+\begin{prop}
+    For $A,B\in\mathbb{M}_{n\times n}(\mathbb{F})$ we have that $\Rank(AB-I)=\Rank(BA-I)$.
+\end{prop}
+\begin{proof}
+    The statement is similar to the following , $\Null(AB-I)=\Null(BA-I)$.
+    \\Let $x\in \Ker(AB-I) \implies ABx=x \implies BABx=Bx \implies Bx\in \Ker(BA-I)$, for all $x,y \in \Ker(AB-I)$ we have that $ Bx=By \implies ABx=ABy \implies x=y$ so $B$ is one to one on $\Ker(AB-I)$ so we get that $\Null(AB-I)\leq \Null(BA-I)$, we may repeat the argument starting from $\Ker(BA-I)$ and working with $A$ to prove the inverse inequality.
+\end{proof}
+\begin{prop}
+    For any matrix over $\mathbb{C}$ one has the following equalities.
+    \begin{itemize}
+        \item $\Rank(A)=\Rank(A^*)=\Rank(\bar{A})=\Rank(AA^*)=\Rank(A^*A)$
+    \end{itemize}
+\end{prop}
+
+\begin{example}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with $\Rank(A)+\Rank(B)=n$, $A+B$ invertible and it may commute with either $A$ or $B$. Prove the following:
+    \begin{itemize}
+        \item For every $k\in \mathbb{N}$ $A^k+B^k$ is invertible.
+        \item $\Tr((A+B)^k)=\Tr(A^k)+\Tr(B^k)$.
+    \end{itemize}
+    \begin{proof}
+        Since $\Rank(A)+\Rank(B)=n$ we get that $\Null(A)+\Null(B)=n$. We would like to write the space as a $V=\Ker(A)+\Ker(B)$ or even better have the sum be direct, so we naturally want to check if $\dim(\Ker(A)\cap \Ker(B))=0$ to use $\dim(\Ker(A)+\Ker(B))=\Null(A)+\Null(B)-\dim(\Ker(A)\cap \Ker(B))$ the Grassmann equation, to this end we use the fact that $\Ker(A)\cap \Ker(B)\subseteq\Ker(A+B)=\{ 0\}$ since $A+B$ is invertible. So we indeed get what we want $V=\Ker(A) \oplus \Ker(B)$. Using the fact that $A+B$ may commute with either $A$ or $B$ we argue the $AB=BA$ (check!). We will prove that $AB=0$,
+        any vector may be written uniquely (we will see that uniqueness isn't really necessary) as a sum of two vectors $v_A,v_B$ in their respective spaces.
+        for any $v$ we get that $ABv=AB(v_A+v_B)=ABv_A+A(Bv_B)=BAv_A+0=0$, so $AB=0=BA$ the rest follows easily.
+    \end{proof}
+\end{example}
+\begin{theorem}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ if $P(A)=0$ for some polynomial $P$ and $P=RQ$ with $(R,Q)=1$ then $V=\Ker(Q(A)) \oplus \Ker(R(A))$.
+\end{theorem}
+\newpage
+\subsection{On rank 1 matrices}
+Matrices of rank one appear in math competitions and they are mostly dealt with using the following propositions. 
+\begin{prop}
+    Every rank 1 matrix can be written in the form $vw^T$ for some $v,w$, and its trace is $w^Tv=v^Tw$.
+\end{prop}
+\begin{prop}
+    For any rank 1 matrix $A$ we get that $A^2=\Tr(A) A$ and \begin{itemize}
+        \item If $\Tr(A)=0$, $A$ is similar to $ \begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & \vdots \\
+0 & 0 & \ddots & 0 \\
+0 & \cdots & 0 & 0 
+\end{bmatrix}  $ meaning with a change of bases it maps  $e_1$ and $e_i$ $i>2$ to 0 and $e_2$ to $e_1$.
+\item if $\Tr(A)\neq0$ then $A$ is diagonalizable with only one non zero eigen value
+    \end{itemize}
+\end{prop}
+\begin{remark}
+    The matrix $uw^T$ naturally appears when someone is trying to express the tensor product in some basis.
+\end{remark}
+\subsection{Exercises}
+\begin{ex}
+    Let $A\in \mathbb{M}_{n}(\mathbb{C})$ with $A^2=O$. Prove that $\Rank(A)\leq \frac{n}{2}$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_{n}(\mathbb{C})$ with $A^2-3A+2I=O$. Prove that $\Rank(A-I)+\Rank(A-2I)=n$.
+\end{ex}
+\begin{ex}[Gazeta Mathematica 465]
+    Let $A\in \mathbb{M}_{n\times m}(\mathbb{C})$ and $B\in \mathbb{M}_{m\times n}(\mathbb{C})$.
+    Prove that $\Rank(I_n-AB)-\Rank(I_m-BA)=n-m$.
+\end{ex}
+
+\begin{ex}[Gazeta Mathematica 537]
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=A$ and $B^2=B$ Prove that $\mathrm{Im}(AB-BA)=\mathrm{Im}(A+B-I)\cap \mathrm{Im}(A-B)$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$. Prove that $\Ker(A-I)\subseteq \mathrm{Im}(A)$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=A$. Prove that $\Rank(A-I)=n-\Tr(A)$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$. Show that $\Ker(A)\cap \Ker(B)\subseteq \Ker(A+B)$.
+\end{ex}
+\begin{ex}
+   Let $A\in \mathbb{M}_n(\mathbb{C})$. Show that $\Ker(A^*A)=\Ker(A)$, $\Ker(AA^*)=\Ker(A^*)$
+   and that $\Ker(A^*A+B^*B)=\Ker(A)\cap \Ker(B)$.\\
+   Does the same follow for $\Ker(AA^*-BB^*)$?
+\end{ex}
+\begin{remark}
+    Here you may use the fact that if $x^*C^*Cx=0$ then $Cx=0$ for any matrix $C$ and vector $x$. 
+\end{remark}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ be such that $A^*B=O$.\\
+    Prove that $\Rank(A^*A+B^*B)\leq \Rank(AA^*+BB^*)$
+\end{ex}
+
+\begin{ex}[SEEMOUS 2020 P3]
+	Let $n$ be a positive integer, $ k\in \mathbb{C}$ and $A\in \mathbb{M}_n(\mathbb{C})$ such that $ \Tr(A) \neq 0 $ and $$\Rank(A)+\Rank(\Tr(A)\cdot I-kA)=n$$
+	Find $\Rank(A)$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with $\Rank(A)+\Rank(B)=\Rank(A+B)$ and $AB+BA=0$ show that $AB=0$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ be symmetric matrices such that $(AB+BA-A^2-I)^2=AB^2-B^2A$.\\
+    Find $\Rank(A^2+B^2)$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ be of same rank and $k\in \mathbb{N}^+$. Prove then $A^{k+1}B^k=A \iff B^{k+1}A^k=B$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$. Prove that the following statements are
+equivalent:
+\begin{itemize}
+    \item $AB=A$ and $\Rank(I-A)+\Rank(B)=n$.
+    \item $BA=B$ and $\Rank(I-B)+\Rank(A)=n$.
+\end{itemize}
+\end{ex}
+\begin{ex}
+    Let $A_1,\ldots A_k\in \mathbb{M}_n(\mathbb{C})$ such that $A_i^2=A_i$ for all $i$. Prove that $\Rank(I-
+    \prod_{i=1}^{k} A_i)\leq \sum_{i=1}^k\Null(A_i)$. 
+\end{ex}
+\subsection*{Rank one}
+\begin{ex}
+   Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with $B$ being of rank one, then $\det(A+xB)=\det(A)+xa$ for some $a\in \mathbb{C}$.\\
+   Does this follow if $A,B$ were rational or real matrices? (would a be rational or real respectively)?
+\end{ex}
+\begin{ex}
+    Let $A,X\in \mathbb{M}_n(\mathbb{R})$ such that $X$ is of rank one. Prove the following:$$\det(A+X)\det(A-X)\leq(\det(A))^2$$
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{R})$ such that $\Rank(AB-BA+I)=1$. Prove the following:$$\Tr(ABAB)-\Tr(A^2B^2)=\frac{n(n-1)}{2}$$
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $\Rank([A,B])=1$. Prove that $[A,B]^2=0$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ of rank one. Prove $\det(A+I)=\Tr(A)+1$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $\Rank(AB+BA)=1$. Prove that $[A,B]$ is not invertible.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $A^2+B^2=2AB$. Prove that $[A,B]$ is not invertible and if $\Rank(A-B)=1$ then $[A,B]=0$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{R})$ such that $X=A+iB$ is of rank one. Prove that $\Tr(A^2+B^2)\geq 0$ and if $\Tr(A^2+B^2)=  0$ then $A^2+B^2=0$.
+\end{ex}
+
+
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=[A,B]$ and $\Rank(A+B)=1$. Prove that $A^3=ABA=0$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=[A,B]$ and $\Rank(A-B)=1$ prove that $ABA=0$.
+\end{ex}
+This is the same as the last and was posed on SEEMOUS.
+
+\newpage
+\section{Block Matrices}
+Block matrices were added because most proofs on ranks tend to be given in block form although perfectly good proofs may be given using kernel arguments, although some times we may have to deal with quotient spaces and so the block diagonals give quicker and cleaner answers.
+\begin{definition}
+    A square matrix of dimension $n$ is in block form if $M=\begin{bmatrix}
+        X&Y\\
+        Z&W
+    \end{bmatrix}$
+for some $X\in \mathbb{M}_{l\times k}(\mathbb{F})$, $Y\in \mathbb{M}_{l\times (n-k)}(\mathbb{F})$, $Z\in \mathbb{M}_{(n-l)\times k}(\mathbb{F})$ and $W\in \mathbb{M}_{(n-l)\times (n-k)}(\mathbb{F})$.
+\end{definition}
+\begin{prop}
+    If $M=\begin{bmatrix}
+        M_{1,1}&M_{1,2}\\
+        M_{2,1}&M_{2,2}
+    \end{bmatrix}$ and $N=\begin{bmatrix}
+        N_{1,1}&N_{1,2}\\
+        N_{2,1}&N_{2,2}
+    \end{bmatrix}$ two square matrices of same block decomposition, then $M+N$ and $MN$ is in the same block form and\\
+    $(M+N)_{i,j}=(M_{i,j}+N_{i,j})_{i,j}$
+    \\$(MN)_{i,j}=(\sum_kM_{i,k}N_{k,j})_{i,j}$.\\ Note that we may not commute the summands since matrices don't naturally commute.
+\end{prop}
+\begin{example}
+    Let $A\in \mathbb{M}_{2 \times 4}(\mathbb{C})$ and $B\in \mathbb{M}_{4 \times 2}(\mathbb{C})$ with $BA=\begin{bmatrix}
+        1 & 0 &-1 & 0\\
+        0 & 1 & 0 & -1\\
+        -1& 0 & 1 & 0 \\
+        0 & -1 & 0 & 1\\
+    \end{bmatrix}$ calculate $AB$.
+\end{example}
+\begin{proof}
+    We see that $A$ can be thought of as the following block matrix $A=\begin{bmatrix}
+        A_1 & A_2
+    \end{bmatrix}$ for some $A_1,A_2\in \mathbb{M}_{2}$, similarly $B=\begin{bmatrix}
+        B_1 \\ B_2
+    \end{bmatrix}$.
+    So $BA=\begin{bmatrix}
+        B_1A_1 & B_1A_2\\
+        B_2A_1 & B_2A_2\\
+    \end{bmatrix}$ giving us that $A_1=B_1^{-1}=-B_2^{-1}=-A_2$ so $AB=A_1B_1+A_2B_2=2I$.
+\end{proof}
+\begin{definition}
+Let $A,B$ be matrices of dimension $n\times m$ and $k\times l$ respectively. We denote $A \oplus B$ the matrix of dimension $ (n+k)\times(m+l) $ of form \[ \begin{bmatrix}
+	A & O_{n \times l}\\
+	O_{k \times m} & B
+\end{bmatrix} \]\\
+and we define $\bigoplus_{1\leq i \leq n}M_i$ inductively.
+\end{definition}
+
+\begin{prop}
+ Let $A=\begin{bmatrix}
+    X & Y \\
+    O & Z
+ \end{bmatrix}$ where $X,Y$ are square and possibly of different dimension, then $\det(A)=\det(X)\det(Z)$ same goes for the matrix $\begin{bmatrix}
+    X & O \\
+    Y & Z
+ \end{bmatrix}$.\\
+ This feels the same as calculating the determinant of an upper or lower triangular matrix and in fact this is
+ the correct generalisation if we were to have more matrices as one can see inductively.
+\end{prop}
+\begin{prop}
+Let $A$ have a block decomposition as $\begin{bmatrix}
+    X & Y \\
+    O & Z
+ \end{bmatrix}$ then $\Rank(A)\geq \Rank(X)+\Rank(Z)$ if $Y$ were $O$ we would have equality.
+\end{prop}
+\begin{theorem}
+Let $A=\begin{bmatrix}
+    X & Y \\
+    Z & W
+ \end{bmatrix}$ with $X$ square and invertible then set $S=W-ZX^{-1}Y$, we call this the Schur complement of $X$ in $M$.
+  We get that $\begin{bmatrix}
+    I & O\\
+    ZX^{-1} & I
+ \end{bmatrix}\begin{bmatrix}
+    X & O\\
+    O & S
+ \end{bmatrix}\begin{bmatrix}
+    I & X^{-1}Y\\
+    O & I
+ \end{bmatrix}$. From this we get that $\det(M)=\det(X)\det(S)$.
+\end{theorem}
+\begin{prop}
+    Let $A \in \mathbb{M}_{n \cross m}(\mathbb{F})$ and $B \in \mathbb{M}_{m \cross n}(\mathbb{F})$. Then $\det(I_n -AB)=\det(I_m-BA)$.
+\end{prop}
+\begin{example}
+Let $A$ be a square matrix of dimension $n$ then $\Rank(A^2-A)+n=\Rank(A)+\Rank(A-I)$.\\
+Proof. Consider $A\oplus A-I$.\\
+Note that we can do row and column manipulations without affecting the rank by multiplying our matrix with either $\begin{bmatrix} I & O\\
+	I & I
+\end{bmatrix}$ or similar matrices, since their determinants are easily calculated and are non zero. Be careful with the manipulations since sometimes you may want to add the second row multiplied by some matrix to the first but the result may not hold! Always take your time and figure out the matrices you multiply with that leave the rank of our original matrix unchanged.
+$$\begin{bmatrix}
+A & 0\\
+0 & A-I
+\end{bmatrix}\to
+\begin{bmatrix}
+A & 0\\
+A & A-I
+\end{bmatrix}\to 
+\begin{bmatrix}
+A & 0\\
+A & I-A
+\end{bmatrix}\to
+\begin{bmatrix}
+A & A\\
+A & I
+\end{bmatrix}\to
+\begin{bmatrix}
+A-A^2 & 0\\
+A & I
+\end{bmatrix}\to
+\begin{bmatrix}
+A-A^2 & 0\\
+0 & I
+\end{bmatrix}
+$$ 
+
+\end{example}
+\begin{remark}
+    Check out \cite{Pop2020}.
+\end{remark}
+With the above in mind try to solve some of the previous' section exercises for ranks using block diagonals.
+
+
+
+
+
+
+
+
+
+
+\newpage
+\subsection{Exercises}
+\begin{ex}[\cite{Z} Ex 2.64]
+Let $A$ be an $m\cross n$ and $B$ be an $n \cross p$ matrix. Show that
+$$\Rank\begin{bmatrix}
+O & A\\ 
+B& I
+\end{bmatrix}=n+\Rank(AB) $$
+
+\end{ex}
+\begin{ex}[\cite{Z} Ex 2.45]Prove or disprove the following
+	\begin{itemize}
+	\item $A^2=B^2 \implies A=B$ or $A=-B$
+	\item $\Rank(A)=\Rank(B)\implies \Rank(A^2)=\Rank(B^2)$
+	\item $\Rank(A+kB)\leq \Rank(A)+k\Rank(B)$ for any scalar $k$
+	\item $\Rank(A-B)\leq \Rank(A) - \Rank(B)$
+	\item $\Rank(AB)=0 \implies \Rank(BA)=0$
+	\item $\Rank(AB)=0 \implies \Rank(A)\Rank(B)=0 $
+
+
+
+
+\end{itemize}
+\end{ex}
+
+\begin{ex}
+Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^3=A$. Prove that $\Rank(A)+\Rank(A-I)+\Rank(A+I)=2n$
+
+\end{ex}
+\begin{ex}
+    Let $A,B $ be matrices of dimension $n \times m$ and $ m \times n$ respectively then $ \det(I_n-AB)=\det(I_m-BA)$\\
+    (Hint: Consider $M=\begin{bmatrix}
+        A & I \\ I & B
+    \end{bmatrix}$)
+\end{ex}
+
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ Prove that
+    $\Rank(A-ABA)-\Rank(B-BAB)=\Rank(A)-\Rank(B)$.
+\end{ex}
+\begin{ex}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=A$ and $B^2=B$. Prove that
+    $\Rank(A-BA)-\Rank(B-AB)=\Rank(A)-\Rank(B)$.
+\end{ex}
+(Hint: $\Rank(XY)=?$)
+\begin{ex}
+    Let $A,B \in \mathbb{M}_n(\mathbb{F})$. Prove that $\det\begin{bmatrix}
+        A & B \\
+        B & A 
+    \end{bmatrix}=\det(A+B)\det(A-B)$.
+\end{ex}
+\begin{ex}
+    Let $A,B \in \mathbb{M}_n(\mathbb{R})$. Prove that $\det\begin{bmatrix}
+        A & -B \\
+        B & A 
+    \end{bmatrix}=|\det(A+iB)|^2\geq 0$.
+\end{ex}
+\begin{ex}
+    Let $A,B \in \mathbb{M}_n(\mathbb{F})$. Prove that $\det\begin{bmatrix}
+        A & I \\
+        I & B 
+    \end{bmatrix}=n+\Rank(I-AB)$.
+\end{ex}
+\begin{ex}
+    Prove that $\Rank\begin{bmatrix}
+        A & AB \\
+        CA & CAB
+    \end{bmatrix}=\Rank(A)$
+\end{ex}
+\newpage
+\section{Eigenvectors and Eigenvalues}
+
+\begin{definition}
+	Let $ A $ be a matrix associated with the linear endomorphism $f$ of $V$.\\ We call a subspace $W$ invariant if $\mathrm{Im}(f|_{W})\subseteq W $.
+\end{definition}
+In order to simplify calculation we can try to write $V$ as a direct sum of different $ W_i $. so we needn't worry about the whole of $ V $ when we try to calculate $Aw$ for some $w\in W_i$
+The following proposition is very useful.
+
+\begin{prop}
+	Given a space $V$ and a direct sum decomposition $W_i$ such that $W_i$'s are invariant spaces of a square matrix $ A $, there exists a base $\mathfrak{C}$ with a transition matrix $U$ such that $ A =UMU^{-1}$ and $ M=\bigoplus_i M_i$.
+\end{prop}
+This essentially tells us that we can see our $f$ a "sum" of some $f_i$ that are zero outside their associated invariant subspaces.
+\begin{definition}
+An \textit{eigenvector} of an endomorphism $f$ is a non-zero vector $v$ such that $f(v)=\lambda v$ for some $ \lambda \in \mathbb{F} $, we call such $ \lambda $'s \textit{eigenvalues}.
+\end{definition}
+It is clear that eigenvectors generate invariant subspaces of dimension 1.
+\begin{prop}
+Eigenvectors associated with different eigenvalues must be linearly independent. Meaning if one has $n$ different eigenvalues of a matrix of dimension $ n$ then that matrix is diagonalizable.
+\end{prop}
+	A square matrix is called diagonalizable if $V$ is a direct sum of invariant subspaces of dimension 1, or if all the eigenvectors of $A$ form a basis of $V$. It is also clear that a matrix of finite dimension cannot have an infinite number of eigenvalues, this can be used in some cases to prove that a matrix must have certain eigenvalues, for example one may show that if $\lambda$ is an eigenvalue then $\lambda^2$ is an eigenvalue so we know that $\lambda$ can only be $0,1$. 
+\begin{example}
+	Let $F,G$ be two linear endomorphism of $\mathbb{R}^n$ and $a$ a nonzero real number such that $[F,G]=F\circ G-G\circ F=aF$, show that \begin{itemize}
+		\item $F^k\circ G- G\circ F^k=akF^k$ holds for all $k\geq 1$
+		\item There exists some $k$ such that $F^k=O$. 
+	\end{itemize} 
+	The first can be done using induction, the base case is taken care of so assume that it holds for some $k$, $F^k \circ G-G \circ F^k=akF^k$ so $F^k\circ G \circ F- G\circ F^{k+1}=akF^{k+1}$, we know that $G\circ F=F\circ G-aF$ so $F^k \circ (F \circ G-aF)= F^{k+1}\circ G-aF^{k+1}$, combining with the above we get the desired.
+	For the second we notice that $L(X)=[X,G]$ is a linear function on linear functions and the $ak$ are eigenvalues of it (with eigenvector $F^k$) as long as $F^k\neq O$. If $F^k\neq O$ for all $k$ we get that there must be infinitely many eigenvalues but the dimension of the vector space of linear functions on $\mathbb{R}^n$ is finite. So $F^k=O$ for some $k$.
+\end{example}
+Note that this is similar to the situation $[A,B]=A$ so it is trivial that $A$ is nilpotent.
+
+\subsection{Characteristic and minimal polynomial}
+To begin let's note that the invariant subspaces in question are of the form $ \Ker(A-\lambda I)$ since if $Av=\lambda v \iff (A-\lambda I)v=0 $ and we note that we can express this as $ \det(A-\lambda I)=0 $. So we are lead to the following definition.
+\begin{definition}
+Let $A\in \mathbb{M}_n(\mathbb{C})$. Define $P_A(x)=\det(A-xI)$, a polynomial of degree $n$, we call it the characteristic polynomial of $A$, and its roots are in correspondence with the eigenvalues of $A$.
+\end{definition}
+\begin{definition}
+    For $A\in \mathbb{M}_n(\mathbb{C})$ we denote the set $\sigma(A)$ the set of all eigenvalues of $A$, note that it is in correspondence with roots of some polynomial it is non empty and has at most $n$ elements.
+\end{definition}
+\begin{theorem}[Spectral Mapping]
+For $A\in \mathbb{M}_n(\mathbb{C})$ and a polynomial $f\in \mathbb{C}[x]$ we get that $\sigma(f(A))=f(\sigma(A))$.
+    
+\end{theorem}
+\begin{theorem}[Cayley-Hamilton]
+Let $A\in \mathbb{M}_n(\mathbb{C})$. Then $A$ annihilates its characteristic polynomial.
+\end{theorem}
+Some nice properties of the characteristic polynomial are listed below.
+\begin{itemize}
+	\item If $A$ is a matrix over a field $\mathbb{F} $ then $ P_A(x)\in \mathbb{F}[x] $
+	\item $ P_A(0)=\det(A) $
+	\item If $A$ and $B$ are similar then $ P_A(x)=P_B(x) $
+	\item If $P_A(x)$ has no repeated roots then $A$ is diagonalizable.
+\end{itemize}
+\begin{remark}
+
+Starting with a matrix $ A \in \mathbb{M}_{n\times n}(\mathbb{F})$ we are lead to define the set $I_A \subset \mathbb{F}[x]$ with $ I_A=\{P(x)\in \mathbb{F}[x] \double|\double P(A)=O\} $.
+without much trouble we can see that $I_A$ is not empty by Cayley-Hamilton, using some algebra we identify $I_A$ as an ideal of $ \mathbb{F}[x] $ and since $ \mathbb{F} $ is a field then $ \mathbb{F}[x]$ is a PID, meaning there is a least (by degree) element in $ I_A $ such that $I_A=\langle m_A(x)\rangle$, for uniqueness reasons we take $m_A(x)$ to be monic meaning its leading coefficient is 1. We call such a polynomial \textit{the} minimal polynomial of $A$.
+\end{remark}
+Some of the properties of the minimal polynomial are listed below.
+\begin{itemize}
+	\item If $P(A)=O$ then $m_A(x)|P(x)$.
+	\item All the eigenvalues of $A$ are roots of $m_A(x)$.
+	\item If $m_A(x)$ has repeated roots then $A$ is not diagonalizable.
+	\item $m_A(x) \in \mathbb{F}[x]$
+\end{itemize}
+The last property means that if our matrix is real or rational then such will be the minimal polynomial we will see applications in the exercises.
+\newpage
+\subsection{Jordan Canonical Form}
+Unfortunately not all matrices are diagonalizable, meaning we cannot find enough eigenvectors to form a basis, luckily we have the following theorem that characterizes these situations.
+\begin{definition}
+	We denote $N_m(a)$ the $m$ dimensional square matrix such that $N_m(a)=aI_m + N_m(0)$ and $N_m(0)=(\delta_{i+1,j})_{i,j}$.
+\end{definition}
+\begin{example}
+$N_2(3)=\begin{bmatrix}3 & 1 \\
+0 & 3  
+\end{bmatrix}$
+, 
+$N_3(2)=\begin{bmatrix}
+    2 &1&0\\
+    0 &2 &1 \\
+    0 & 0 &2
+\end{bmatrix}$, 
+$ N_4(e)=\begin{bmatrix} e & 1 & 0 & 0\\
+    0 &e & 1 & 0 \\
+    0 & 0 & e & 1  \\
+   0 & 0 &0 &e
+\end{bmatrix}$.
+    
+\end{example}
+\begin{definition}
+	A generalized eigenvector of degree $m$ of a matrix $A$ is a vector $v$ such that there is an eigenvalue $\lambda$ such that $(A-\lambda I_n)^mv=O$ but $(A-\lambda I_n)^{m-1}v\neq 0$.	
+\end{definition}
+\begin{theorem}[Jordan Canonical Form adapted for our needs]
+	Let $A$ be a square matrix of dimension $n$ and minimal polynomial of the form $m_A(x)=\prod_i(x-a_i)^{n_i}$ then $A$ is similar to a matrix $J=\bigoplus_i(N_{m_i}(a_i))$ such that there is at least a matrix of the form $N_{n_i}(a_i)$ and any other matrix of the form $ N_{m_i}(a_i) $ must be of dimension same or smaller than $ n_i $.
+\end{theorem}
+This tells us that we have a direct sum of invariant subspaces $W_i$ that are spanned by generalized eigenvectors of ascending degree.
+This may seem abstract but it gives us a nice way of thinking about matrices. Application may vary but the main idea is that if one is asked to prove something about all matrices and the condition works well with conjugation and block matrices then it is enough to prove that the needed hold for jordan blocks.
+
+\begin{definition}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ and $\lambda\in\sigma(A)$ then we define its \textit{Geometric multiplicity} the number of jordan block associated with the eigenvalue $\lambda$ and the \textit{Algebraic multiplicity} the sum of the sizes of the associated Jordan blocks in the Jordan decomposition.
+\end{definition}
+\par\medskip\noindent
+\begin{minipage}{0.58\textwidth}
+\resizebox{\linewidth}{!}{
+$J = \left[\begin{array}{ccc|cc|cc|cc|ccc|c}
+3&1& & & & & & & & & & & \\
+ &3&1& & & & & & & & & & \\
+ & &3& & & & & & & & & & \\ \hline
+ & & &3&1& & & & & & & & \\
+ & & & &3& & & & & & & & \\ \hline
+ & & & & &3&1& & & & & & \\
+ & & & & & &3& & & & & & \\ \hline
+ & & & & & & &2&1& & & & \\
+ & & & & & & & &2& & & & \\ \hline
+ & & & & & & & & &2&1& & \\
+ & & & & & & & & & &2&1& \\
+ & & & & & & & & & & &2& \\ \hline
+ & & & & & & & & & & & &4
+\end{array}\right]$}
+\end{minipage}
+\hfill
+\begin{minipage}{0.38\textwidth}
+Call the algebraic multiplicity $\mathscr{A}$ and the geometric with $\mathscr{G}$ here we get that $\mathscr{A}(3)=7$ and $\mathscr{G}(3)=3$, $\mathscr{A}(2)=5$ and $\mathscr{G}(2)=2$ and $\mathscr{A}(4)=\mathscr{G}(4)=1$
+\end{minipage}
+\par\medskip
+Note that using the Jordan block decomposition we can give a non algebraic meaning to the minimal polynomial, indeed the minimal polynomial is the $\mathrm{lcm}$ of the characteristic polynomials of all the Jordan blocks.
+\newpage
+\subsection{Exercises}
+
+
+\begin{ex}
+    Prove that $AB$ and $BA$ have the same characteristic polynomial.
+\end{ex}
+\begin{ex}
+    Find $A,B\in\mathbb{M}_n(\mathbb{C})$ such that $AB$ and $BA$ have:
+    \begin{itemize}
+        \item Different ranks.
+        \item Different Jordan decompositions, but same minimal polynomial.
+    \end{itemize}
+\end{ex}
+\begin{ex}
+Let $A,B \in \mathbb{M}_n(\mathbb{C})$ suppose that they have the same characteristic polynomial, must they be similar? What if they had the same minimal polynomial?
+\end{ex}
+\begin{ex}
+    Is there a real square matrix $M$ of odd dimension such that $M^2+I=O$, what about $M^2+M+I=0$?
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ be of rank one. Prove the proposition we gave.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^2=A$. Prove $\Rank(A)=\Tr(A)$.
+\end{ex}
+\begin{ex}
+    Let $\mathscr{G}$ be a finite multiplicative subgroup of $\mathbb{M}_n(\mathbb{C})$ and set $S=\sum_{M\in \mathscr{G}} M$. Prove that if $\Tr(S)=0$ then $S=0$. 
+\end{ex}
+\begin{ex}
+    Let $A,B \in \mathbb{M}_n(\mathbb{C})$ such that $AB-BA=A$ prove that all the eigenvalues of $A$ are 0.\\
+    How does its characteristic and minimal polynomials look like?
+    (Hint): Newtons identities
+\end{ex}
+\begin{ex}[SEEMOUS 2023 P1]
+Let $A,B \in \mathbb{M}_n(\mathbb{C})$ such that $  A=AB-BA+A^2B-2ABA+BA^2+A^2BA-ABA^2$. Prove that $\det(A)=0$
+\end{ex}
+\begin{ex}
+	Let $A\in \mathbb{M}_n(\mathbb{C})$ prove that $A^T \sim A$.
+\end{ex}
+\begin{ex}
+	Let $f:\mathbb{M}_n(\mathbb{C}) \to \mathbb{M}_n(\mathbb{C})$ of the form $f(X)=AX-XB$ for some $A,B\in \mathbb{M}_n(\mathbb{C})$ prove that $f$ is an isomorphism iff $A,B$ share no eigenvalue.
+\end{ex}
+\begin{ex}
+	Try to apply Jordan's theorem on matrices that are zeroed by $X^3+1$ or $X^4+1$ and are of dimension $2,3,4,5$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ be a matrix such that $A^m=I$, and $\zeta$ a primitive $m$-th root of unity.
+    Prove that $\Rank(A-I)+\Rank(A-\zeta I)+\cdots+\Rank(A-\zeta^{m-1}I)=n(m-1)$.
+\end{ex}
+\begin{ex}
+    Let $A,B,C,D\in \mathbb{M}_n(\mathbb{C})$ with $\det(AC)\neq0$ such that $A^kB=C^kD$ for all $k\geq 1$, prove that $B=D$.
+\end{ex}
+\begin{ex}
+    Let $A$ be a matrix with non zero trace, prove that $A^2=\Tr(A) A$ if and only if $\Rank(A)=1$.
+\end{ex}
+
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$. Prove the following: $$\det(A)=\frac{1}{n!}\det\begin{bmatrix}
+    \Tr(A) & 1 & 0 & \cdots & \cdots & 0 \\
+    \Tr(A^2) & \Tr(A) & 2 & 0 & \cdots & 0 \\
+    \Tr(A^3) & \Tr(A^2) & \Tr(A) & 3 & \cdots & 0 \\
+    \vdots & \vdots & \vdots & \vdots & \ddots & 0 \\
+    \Tr(A^{n-1}) & \Tr(A^{n-2}) & \cdots & \cdots & \Tr(A) & n-1 \\
+     \Tr(A^{n}) & \Tr(A^{n-1}) & \cdots & \cdots & \Tr(A^2) & \Tr(A) \\
+    \end{bmatrix}$$
+\end{ex}
+Note that this is a little weaker than the newton identities, and gives a proof of the fact that if $\Tr(A^i)=0 \quad i\in \{1,\ldots ,n\}$ then $\det(A)=0$. 
+\begin{ex}[SEEMOUS TST AUTH 2025]
+Let $A,B \in \mathbb{M}_n(\mathbb{C})$ with $A+I$ invertible and $AB+A=B^2+B$, set $k$ the algebraic multiplicity of the eigenvalue $-1$ associated with $B$. Prove that $\Rank(A-B)=k$. 
+\end{ex}
+\begin{ex}[SEEMOUS TST AUTH 2021]
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ with minimal polynomial of degree $m$.
+    Consider the matrix $B\in \mathbb{M}_m(\mathbb{C})$ with $B=(\Tr(A^{i+j-2}))_{i,j}$. Prove that $A$ is diagonalizable iff $B$ is invertible. (Note: $A^0=I$).
+\end{ex}
+\begin{ex}
+    Let $A=\begin{bmatrix}
+        a & -a & -1 & 0 \\
+        a & -a & 0 & -1 \\
+        1 & 0 & a & -a \\
+        0 & 1 & a & -a \\
+    \end{bmatrix}$ find all rational $a$ such that $A=X^2$ where $X$ has rational entries.
+\end{ex}
+\newpage
+\section{Diagonal forms}
+\begin{theorem}[Schur's Theorem]
+	Let $A\in \mathbb{M}_n(\mathbb{C})$ then there exists an orthonormal basis $U$ such that $A=U^*TU$ such that $T$ is upper triangular and the diagonal elements are all the eigenvalues of $A$.
+\end{theorem}
+\begin{remark}
+	One can easily argue that $T$ may be made to be lower triangular, this is helpful when working with something like $AA^*$ since if we take $A$ to be upper triangular the diagonal elements are harder to compute.
+\end{remark}
+\begin{theorem}[Simultaneous Diagonalization]
+	If $A_i$ are finitely many commuting diagonalizable matrices there exists a base $V$ such that all the $A_i$'s are diagonal with respect to $V$. Meaning that all matrices of the form $ V^{-1} A_i V $ are diagonal.
+\end{theorem}
+\begin{theorem}[Simultaneous Triangularization]
+	If $A_i$ are finitely many commuting matrices there exists an orthonormal base $U$ such that all the $A_i$'s are triangular with respect to $U$. Meaning that all matrices of the form $ U^{*} A_i U $ are triangular.
+\end{theorem}
+\begin{theorem}[Simultaneous Unitary Diagonalization]
+	If $A_i$ are finitely many commuting unitarily diagonalizable matrices there is a unitary $U$ such that all the $A_i$'s are diagonal with respect to that base $U $. Meaning that all matrices of the form $ U^{*} A_i U $ are diagonal.
+\end{theorem}
+I would urge you to take a minute and just play around with eigenvectors and the assumption of commutativity.
+\begin{prop}[Laffey's Theorem*]
+    If the commutator of two matrices $A,B$ is of rank 1 then $A$ and $B$ are simultaneously triangularizable but not necessarily unitarily.
+\end{prop}
+The above does not generalize trivially to more than two matrices and is given only for completeness' sake.
+
+
+\subsection{Exercises}
+\begin{ex}
+Let $A\in \mathbb{M}_n(\mathbb{C})$, prove that there exists an orthonormal basis $U$ such that $A=U^*LU$ such that $L$ is lower triangular and the diagonal elements are all the eigenvalues of $A$.
+\end{ex}
+\begin{ex}
+	Let $p$ be a prime and $X_i\sim \mathrm{Ber}(1/2)$ and independent sequence of random variables meaning it's the outcome of a random experiment with probability $1/2$. Consider the matrix $$
+	\begin{bmatrix}
+	X_0 & X_1 & \cdots & X_{p-1}\\ 
+	X_{p-1} & X_0 & \cdots & X_{p-2}\\ 
+	\vdots & \vdots & \ddots & \vdots \\ 
+	X_1 & X_2 & \cdots & X_0 \\
+	\end{bmatrix}
+	$$
+What is the probability that this matrix is invertible.
+
+\end{ex}
+
+\begin{ex}
+
+    Let $A,B$ be matrices in $\mathbb{M}_n(\mathbb{C})$, $n\geq2$ such that:
+    \begin{itemize}
+        \item $A^2=B^2$
+        \item $A^3+BAB=2I_n$
+    \end{itemize}
+    Prove the following:
+    \begin{itemize}
+        \item $A^3=I_n$
+        \item If $A$ and $B$ share no eigenvalues then $A+B=0$
+    \end{itemize}
+\end{ex}
+\begin{ex}[IMC 2025 P8]
+    Let $A\in \mathbb{M}_n(\mathbb{R})$, define the map $A\mapsto A^R$ that sends a matrix to its counter-clockwise $90^\circ$ rotation. For example $\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{bmatrix}^{R}
+=
+\begin{bmatrix}
+3 & 6 & 9 \\
+2 & 5 & 8 \\
+1 & 4 & 7
+\end{bmatrix}.$\\
+Prove that if $A=A^R$ then for any eigenvalue $\lambda$ of $A$ either $\mathrm{Re}(\lambda)=0$ or $\mathrm{Im}(\lambda)=0$. 
+\end{ex}
+\newpage
+
+\section{Transpose of A Matrix and Inner Products}
+\begin{theorem}[Spectral Theorem] 
+Let $A\in\mathbb{M}_n(\mathbb{C})$ be a normal matrix, then $A$ is unitarily diagonalizable meaning there is a matrix $U$ such that $U^*U=I$ and $U^*AU=D$ where $D$ is a diagonal matrix with diagonal entries the eigenvalues of $A$.
+\end{theorem}
+\begin{prop}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$. Consider the matrix $A^*A$, this matrix is hermitian and so it is unitarily diagonalizable, let $\lambda$ be a non zero eigenvalue, you can check that $A^*Ax=\lambda x\implies |Ax|^2=\lambda |x|^2$ and so $\lambda = \frac{|Ax|^2}{|x|^2}$ is real and positive.
+\end{prop}
+
+\begin{prop}\label{prop:KA}
+If $\Ker(A^*)=\Ker(A)$ then there is a unitary matrix  $U$ such that $A$ is similar to $\begin{bmatrix}
+    P & O\\
+    O & O \\
+\end{bmatrix}$ with $P$ a square invertible matrix.
+\begin{proof}
+    It is known that $\Rank(A)+\Null(A)=n$, we see that $\mathrm{Im}(A)\cap \Ker(A)=\mathrm{Im}(A)\cap \Ker(A^*)=\mathrm{Im}(A)\cap \mathrm{Im}(A)^\perp=0$.\\
+    So $V=\mathrm{Im}(A) \oplus \Ker(A)$, since $V$ has a base we may choose an orthonormal base in $\mathrm{Im}(A)$ and one in $\Ker(A)$ and combine them to get an orthonormal base in $V$, so the matrix that transitions us to that base is unitary and the matrix in the new basis is given by $\begin{bmatrix}
+        P & O \\
+        O & O
+    \end{bmatrix}$, since no vectors from $\mathrm{Im}(A)$ can be mapped to vectors in $\Ker(A)$ and vice versa, also any vector in $\Ker(A)$ is mapped to the zero vector. The invertibility is trivial since if we pick a vector $v$ such that $Av=0$ and use the decomposition $v=i+k$ we get that $A(i+k)=0$ so $Ai=0$ meaning that $Ai\in \Ker(A)$ but this is also in the image of $A$ a contradiction.
+\end{proof}
+\end{prop}
+
+
+
+\subsection{Exercises}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{R})$ such that $A+A^T=I$. Calculate the determinant of $A$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$, via the study of eigenvalues prove that if $\Tr(A^*A)=0$ then $A=0$.
+\end{ex}
+\begin{ex}
+    Find all $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^{2023}=AA^*-A^*A$.
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $(AA^*)^2=A^*A$.\\
+    Prove that $A^*A=AA^*$.
+\end{ex}
+\begin{ex}
+    Let $\omega$ be a non real third root of unity. Is there a matrix $A\in \mathbb{M}_{2025}(\mathbb{C})$ with $\Tr(A)=0$ such that.\\
+    $AA^*+A^*\omega-A\omega^2=2I$.
+\end{ex}
+\begin{ex}[SEEMOUS 2025 P3]
+Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^*A^2=AA^*$, prove that $A^2=A$.    
+\end{ex}
+\begin{ex}
+Let $P(x)\in \mathbb{C}[x]$ be a polynomial. Prove that if $A^*=P(A)$ then $A$ is unitarily diagonalizable.	
+\end{ex}
+\begin{ex}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ with elements from $\{1,-1\}$.
+    Prove that if the matrix is normal then there is an eigenvalue $\lambda$ such that $|\lambda|\geq \sqrt{n}$, does this hold if we lift the normal condition?
+\end{ex}
+\begin{ex}[SEEMOUS 2014 P3]
+Let $A\in \mathbb{M}_n(\mathbb{C})$ and $\alpha\in \mathbb{C}$ such that $A-A^*=2\alpha I$. Prove the following: 
+\begin{itemize}
+    \item $|\det(A)|\geq |\alpha|^n$.
+    \item If $|\det(A)|=|\alpha|^n$ then $A=\alpha I$.
+\end{itemize}
+\end{ex}
+
+\newpage
+\section{Matrix Norms}
+\begin{definition}
+    A norm on a $\mathbb{C}$-vector space $X$ is a function $\norm{\cdot} : X\to \mathbb{R}$ such that the following holds.
+    \begin{itemize}
+        \item $\norm{x}=0\iff x=0$.
+        \item For any $x\in X,c\in \mathbb{C}$ we get that $\norm{cx}=|c|\norm{x}$ where $|c|$ is the modulus of $c$.
+        \item For any $x,y\in X$ we get $\norm{x+y}\leq \norm{x}+\norm{y}$.
+        \item For any $x\in X$, $\norm{x}\geq 0$.
+    \end{itemize}
+    We will call such spaces normed, if a norm happens to imply that $\norm{AB}\leq \norm{A}\norm{B}$ we will call it a submultiplicative norm.
+\end{definition}
+\begin{prop}
+    Let $V$ be a space with an inner product $\langle\cdot,\cdot\rangle$. The function $v\mapsto \sqrt{\langle v,v \rangle}$ defines a norm.
+\end{prop}
+Try to apply this definition to get the usual length of a vector via the usual inner product.
+\begin{definition}
+    Let $X,Y$ be two normed spaces over $\mathbb{C}$.
+    We can define a norm in $\mathcal{L}(X,Y)$ indeed let $f$ be a linear function we define $\norm{f}_{\mathcal{L}}=\sup_{\norm{x}=1}\norm{f(x)}_Y$ or $\sup_{x\in X} \frac{\norm{f(x)}_Y}{\norm{x}_X}$. We call such norms operator norms, and they are always submultiplicative.
+\end{definition}
+\begin{remark}
+    Note that if both $X,Y$ are of finite dimension we can take the supremum as a maximum.
+\end{remark}
+\begin{definition}
+    Over matrices we will work with one of two norms.\begin{itemize}
+        \item $A\mapsto \sqrt{\Tr(AA^*)}$ (the Frobenius norm).
+        \item The operator norm induced by $\mathbb{C}^n\to \mathbb{C}^n$ the usual inner product. This is called the spectral norm. 
+    \end{itemize} 
+For the spectral norm we get that $\norm{AA^*}=\norm{A^*A}=\norm{A}^2$ and if $A$ is normal then the norm is the largest eigenvalue in absolute value.
+\end{definition}
+\subsection{Exercises}
+\begin{ex}
+    Prove that every operator norm is sub-multiplicative.
+\end{ex}
+\begin{ex}
+    Prove the equations $\norm{A^*A}=\norm{A}^2$ and $\norm{A}=\norm{A^*}$.
+\end{ex}
+
+\begin{ex}[SEEMOUS 2022 P3]Let $A\in \mathbb{M}_n(\mathbb{C})$ and $\alpha\in \mathbb{C}$, with both $\alpha$ and $A$ non zero such that $A^2+(A^*)^2=\alpha A A^*$. Prove that: \begin{itemize}
+    \item $\alpha\in \mathbb{R}$ and $|\alpha|\leq 2$.
+    \item $A$ is normal.
+\end{itemize}
+\end{ex}
+\begin{ex}
+    Let $x_n$ be a real sequence. Show that $\sum\limits_{k=1}^n(\frac{x_1+x_2+\cdots +x_k}{k})^2\leq (3+2\sqrt{2})(x_1^2+x_2^2+ \cdots + x_n^2)$.
+\end{ex}
+\newpage
+\section{General ideas and problems}
+Many times problems concerning expressions with a matrix $A$ and $A^*$ appear, most of the time these are either solved via the spectral theorem, the Frobenius norm or the propositions. We will present problems using one of these ideas.\\
+\begin{example}[SEEMOUS 2025 P3] 
+	Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $A^*A^2=AA^*$. Prove that $A^2=A$.
+    \begin{proof}
+	Let $x\in \Ker(A)$ then $AA^*x=0$ multiplying by $x^*$ from the left we get that $x^*AA^*x=0 \iff (A^*x)^*(A^*x)=0 \iff |A^*x|^2=0\iff A^*x=0$. So $\Ker(A) \subset \Ker(A^*)$, comparing dimension we get that $\Null(A)= \Null(A^*)$. So by the above lemma we get the existence of a unitary matrix $U$ such that $A=U^*\begin{bmatrix}
+		P & O\\
+		O & O
+\end{bmatrix}U
+$ with $P$ being invertible. This gives rise to the same equation as the one given with the added assumption of invertibility. Lastly we take the conjugate transpose on both sides of our equation giving us that $(A^*)^2A=A^*A^2\implies A^*=A \implies A^3=A^2 \implies A^2=A$.
+\end{proof}
+\end{example}
+\begin{example}
+    Let $n\in \mathbb{N}$, $n\geq 2$. Find all the values of $k\in \mathbb{N}$, $k\geq1$, for which the following statement holds: $$\textup{``If }A\in \mathbb{M}_n(\mathbb{C})\text{ is such that } A^kA^*=A, \text{ then } A=A^*.\textup{''} $$
+\end{example}
+\begin{proof}
+We begin by forgetting the fact that $A$ is a matrix and working with numbers (later on they might be the eigenvalues). We get that $\lambda^k\overline{\lambda}=\lambda$ if $\lambda\neq0$ then $\lambda^{k-2}|\lambda|^2=1$ taking the norms we get that $|\lambda|=1$ and so $\lambda^{k-2}=1$, the exercise wants us to reason that if this holds then $\lambda$ is real meaning $\lambda=\overline{\lambda}$. For $k-2>2$ this is obviously not the case since we have non trivial roots of unity and so if $k>4$ the matrix $\lambda I_n$ provides a counter example. Let us explore the other cases
+\begin{itemize}
+    \item k=1 $\lambda^{-1}=1\implies \lambda=1$ and so $\lambda$ is real.
+    \item k=2 notice that $\lambda|\lambda|^2=\lambda$ always holds and so we may take $\lambda$ to be any non real number with modulus 1.
+    \item k=3 $\lambda=1$ and so $\lambda$ is real.
+    \item k=4 $\lambda^2=1$ so $\lambda=\pm1$ a real number.
+\end{itemize}
+So if by any chance the matrix is unitarily  diagonalizable we are done.
+Take any $x\in \Ker(A^*)$ then $x\in\Ker(A)$ and so can use proposition \ref{prop:KA}. Skipping the calculations this allows us to prove the needed with the additional assumption that $A$ is invertible, this easily allows us to see that $A$ must be normal since we get that $A^*=A^{1-k}$ and so we can change basis unitarily  again allowing us to assume that $A$ is diagonal concluding the proof.
+\end{proof}
+
+
+\begin{example}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $AB^2A=AB$. Prove that:
+    \begin{itemize}
+        \item $(AB)^2=AB$
+        \item $(AB-BA)^3=O$
+    \end{itemize}
+\begin{proof}
+        Let $X=AB$, $Y=BA$. From $XY=X$ we get that $X(Y-I)=0$ using the Sylvester inequality in the kernel form we get that $n\leq\Null(X)+\Null(Y-I)$ but we know that $\Null(Y-I)=\Null(X-I)$ meaning that $n\leq \Null(X)+\Null(X-I)$, here we use the fact that $\Ker(X) \cap \Ker(X-I)=0$ and that they commute giving us $X(X-I)=0$ or $X^2=X$.
+    \\
+    For the second part we will note that $(X-Y)^2=X^2-XY-YX+Y^2=-Y(X-Y)$, and $Y^3=BABABA=BX^2A=BXA=BABA=Y^2$. So $(X-Y)^4=-Y(X-Y)^3=Y^3(X-Y)=Y^2(X-Y)=-(X-Y)^3$, so the minimal polynomial of $X-Y$ is a factor of $t^4+t^3$ since $X-Y$ has trace $0$ it can only have one eigenvalue $0$ so $(X-Y)^3=0$.
+    \end{proof}
+    \begin{remark}
+        When we do problems where we set matrices $X,Y$ and there is a non trivial connection between them we may miss some important connection i.e. here the nullity of $Y-I$, the fact that $Y^3=Y^2$ or the trace of $X-Y$ so be wary when setting!.
+    \end{remark}
+
+   
+    \end{example}
+\begin{example}[Math Gazeta 498]
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ such that $$A^2-B^2-I_n=\frac{1}{3}(AB-BA)$$
+    Prove that \begin{itemize}
+        \item $\det(A^2-B^2)=\det(A-B)\det(A+B)=1$.
+        \item $(AB-BA)^n=O$.
+    \end{itemize}
+    By the determinants that are required from us we are lead to the definition of the matrix $(A-B)(A+B)=A^2-B^2+(AB-BA)$ and $(A+B)(A-B)=A^2-B^2-(AB-BA)$. We introduce the notation $X=A-B$, $Y=A+B$ and $C=AB-BA$.
+    Using the given equation we get that $XY=\frac{1}{3}C+I+C$ and $YX=\frac{1}{3}C+I-C$, we will try to cancel out the $C$ term in these equations this is possible via the linear combination $XY+2YX=3I$. Now we will use the fact that $XY$ and $YX$ have the same eigenvalues so if $\lambda$ is an eigenvalue of $YX$ with $YXv=\lambda v$ then $XY v=(3-2\lambda)v$ so $3-2\lambda$ is an eigenvalue of $XY$ and so an eigenvalue of $YX$. We cannot have infinitely many eigenvalues so with a simple argument we require $\lambda=3-2\lambda$ and so $\lambda=1$.
+    This gets us that $\det(XY)=1$.
+    If $U$ is the matrix that transitions $YX$ to its Jordan base then $U^{-1}XYU+2U^{-1}YXU=3I$. Meaning that $U^{-1}XYU=3I-2U^{-1}YXU$
+    meaning that $XY$ and $YX$ have the same jordan decomposition and that in the base $U$, $XY$ is very similar looking to its normal jordan form, instead of $1$'s it has $-2$ in its upper diagonals as an example if $YX= \begin{bmatrix}
+1 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 1 & 0 \\
+0 & 0 & 0 & 1 & 1 \\
+0 & 0 & 0 & 0 & 1
+\end{bmatrix}$ then $XY= \begin{bmatrix}
+1 & -2 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & -2 & 0 \\
+0 & 0 & 0 & 1 & -2 \\
+0 & 0 & 0 & 0 & 1
+\end{bmatrix}$.\\
+Note that $A^2-B^2=\frac{XY+YX}{2}$ so if we change base we will get an upper triangular matrix with $1$'s in the diagonal so its determinant is one.
+From the relation $XY=\frac{4}{3}C+I$ and $\frac{-2}{3}C+I$ we get that $XY-YX=2C$, transitioning to the $U$ base we get that $C$ is an upper triangular matrix with $0$'s in its diagonal so it is nilpotent.
+\end{example}
+\begin{example}
+    Let $A\in \mathbb{M}_n(\mathbb{C})$ such that $(AA^*)^2=A^*A$, show that $A^*A=AA^*$.
+\begin{proof}
+    Let $x\in \Ker(A)$ then $x^*(AA^*) (AA^*)x=0$ so $|(AA^*x)|=0$ leading to $AA^*x=0$ that implies $A^*x=0$ by the same trick, so $\Ker(A)=\Ker(A^*)$ and so we can pass to an invertible matrix. Here we note that $A^*A$ and $AA^*$ are both diagonalizable, have real positive eigenvalues and are similar, by our equation we get that if $\lambda$ is an eigenvalue of $AA^*$ then $\lambda^2$ is an eigenvalue of $A^*A$ and so of $AA^*$ meaning that the only possible eigenvalues are solutions to $\lambda^n=\lambda^m$ for some $n,m$ so $\lambda=1,0$ but we assumed that $A$ is invertible so $\lambda =1$, $AA^*$ or $A^*A$ are unitarily diagonalizable and similar to $I$ meaning that there is a unitary matrix $U$ such that $UAA^*U^*=I$ so $AA^*=U^*U=I$ and so $AA^*=I=A^*A$ either via the same trick or the known fact about inverses. 
+\end{proof}
+\end{example}
+
+\newpage
+
+\section{Appendix}
+\subsection{From linear functions to matrices}
+Let $V,W$ be spaces of finite dimension over some $\mathbb{F}$ and $f$ a function between them.
+Let $\mathcal{B}^V=\langle v_1,\ldots ,v_n\rangle$ and $\mathcal{B}^W=\langle w_1,\ldots ,w_m\rangle$ be some ordered basis of $V$ and $W$ meaning we care about the order we write out the basis.
+For every vector space of finite dimension $U$ of dimension $n$ there is an isomorphism call it $M_{\mathcal{B}^U} :U \to \mathbb{M}_{n \times 1}(\mathbb{F})$ defined via $u_i \mapsto
+\left[
+\begin{array}{c}
+0\\
+\vdots\\
+1\\
+\vdots\\
+0
+\end{array}
+\right]
+\;\longleftarrow\;
+\text{\(i\)-th component}
+$
+\[\begin{tikzcd}
+	V & W \\
+	{\mathbb{M}_{n\times1}} & {\mathbb{M}_{m\times1}}
+	\arrow["f", from=1-1, to=1-2]
+	\arrow["{M_{\mathcal{B}^V}}"', from=1-1, to=2-1]
+	\arrow["{M_{\mathcal{B}^W}}", from=1-2, to=2-2]
+	\arrow["A"', dashed, from=2-1, to=2-2]
+\end{tikzcd}\]
+The matrix $A$ will be the matrix representation of our function $f$.
+its definition is straightforward because all we have to do is to express each $f(v_i)=\sum_j a_{j,i} w_j$, this will lead us to define the matrix $(A)_{i,j}=a_{i,j}$
+As an exercise check why the multiplication is compatible with the composition.
+With the above idea we can define a map from $\mathcal{L}(V,W)$ to $\mathbb{M}_{m\times n}(\mathbb{F})$ that we will call $M$, this is linear, if we happen to work on $\mathcal{L}(V,V)$ with some fixed basis this map respects compositions, meaning $M(f\circ g)=M(f)M(g)$.
+\\
+Change of basis is the same thing, consider $\mathcal{B}^U_1$ and $\mathcal{B}^U_2$ two basis and take $f$ to be the identity since we do not want to alter our input we just want to express it in a different basis, if we want to change the base we can consult the following \[\begin{tikzcd}
+	V & V & W & W \\
+	{\mathbb{M}_{n\times1}} & {\mathbb{M}_{n\times1}} & {\mathbb{M}_{m\times1}} & {\mathbb{M}_{m\times1}}
+	\arrow["{Id_V}", from=1-1, to=1-2]
+	\arrow["{M_{\mathcal{B}^V_2}}"', from=1-1, to=2-1]
+	\arrow["f", from=1-2, to=1-3]
+	\arrow["{M_{\mathcal{B}^V_1}}"', from=1-2, to=2-2]
+	\arrow["{Id_W}", from=1-3, to=1-4]
+	\arrow["{M_{\mathcal{B}^W_1}}", from=1-3, to=2-3]
+	\arrow["{M_{\mathcal{B}^W_2}}", from=1-4, to=2-4]
+	\arrow["X"', dashed, from=2-1, to=2-2]
+	\arrow["A"', dashed, from=2-2, to=2-3]
+	\arrow["Y"', dashed, from=2-3, to=2-4]
+\end{tikzcd}\]
+So we get that the matrix that behaves like $f$ with respect to the $\mathcal{B}^V_2$ $\mathcal{B}^W_2$ is given by $YAX$.
+The fact that $X,Y$ are invertible follows from the fact that the identity is an isomorphism.\\
+\subsection{Inner-Products and Gramians}
+    Let $V$ be a complex vector space of dimension $n$. If $\mathcal{B}=\langle x_1,x_2,\ldots,x_n\rangle$ be an ordered base, we define $\mathscr{G}=(\langle x_j,x_i \rangle)_{i,j}$ the \textit{Gramian Matrix} a hermitian matrix.
+     If we wish to find $\langle v,w\rangle$ we may write it out as a sum some $\sum_{ij}c_{i,j}\langle x_i,x_j \rangle$, without much trouble you can convince yourself that this is exactly the same as
+      $M_\mathcal{B}^V(w)^* \mathscr{G}M_\mathcal{B}^V(v)$.
+Notice that this gives us a quick way of calculating inner products with respect some change of basis.
+If we let $\mathcal{B}_1,\mathcal{B}_2$ be two basis and $X$ the transition matrix from $\mathcal{B}_1$ to $\mathcal{B}_2$.
+Denoting the respective Gramians as $\mathscr{G}_1$ and $\mathscr{G}_2$ then with some math we argue that $w^* X^*\mathscr{G}_2Xv=w^*\mathscr{G}_1v$.
+Such transformation occur when changing basis in differential geometry.
+If both bases were orthonormal the respective Gramians would be the identity matrix and so we get that every transition matrix between two orthonormal bases is always unitary.
+
+\addcontentsline{toc}{section}{References}
+\begin{bibdiv}
+\begin{biblist}
+\bib{GA17}{book}{
+	label={PaB},
+      author={Gelca, Razvan},
+      author={Andreescu, Titu},
+       title={Putnam and Beyond},
+     edition={2},
+   publisher={Springer International Publishing},
+     address={Cham, Switzerland},
+      date={2017},
+      isbn={978-3-319-58986-2},
+       doi={10.1007/978-3-319-58988-6},
+}
+\bib{Z3}{book}{
+   author={Zhang, Fuzhen},
+   title={Problems in Linear Algebra and Matrix Theory},
+   publisher={World Scientific},
+   address={Singapore},
+   date={2021},
+   isbn={978-981-123-910-6},
+   doi={10.1142/12301}
+}
+\bib{Z}{book}{
+   author={Zhang, Fuzhen},
+   title={Linear Algebra: Challenging Problems for Students},
+   series={The Johns Hopkins Studies in the Mathematical Sciences},
+   publisher={The Johns Hopkins University Press},
+   address={Baltimore, MD},
+   date={1996},
+   isbn={978-0-8018-5324-1}
+}
+\bib{Z2}{book}{
+   author={Zhang, Fuzhen},
+   title={Matrix Theory: Basic Results and Techniques},
+   edition={2},
+   series={Universitext},
+   publisher={Springer},
+   address={New York},
+   date={2011},
+   isbn={978-1-4614-1098-0},
+   doi={10.1007/978-1-4614-1099-7}
+}
+\bib{Pop2020}{article}{
+      author={Pop, Vasile},
+       title={Relations between ranks of matrix polynomials},
+        date={2020},
+     journal={arXiv preprint arXiv:2010.00634},
+      eprint={2010.00634},
+         url={https://arxiv.org/abs/2010.00634},
+}
+
+\bib{Berger1}{book}{
+    author={Berger, Marcel},
+    title={Geometry I},
+    series={Universitext},
+    publisher={Springer},
+    address={Berlin},
+    date={1987},
+}
+\bib{Berger2}{book}{
+    author={Berger, Marcel},
+    title={Geometry II},
+    series={Universitext},
+    publisher={Springer},
+    address={Berlin},
+    date={1987},
+}
+\bib{Kaplansky}{book}{
+    author={Kaplansky, Irving},
+    title={Linear Algebra and Geometry: A Second Course},
+    publisher={Dover},
+    address={New York},
+    date={2003},
+}
+\bib{lang2002algebra}{book}{
+   author={Lang, Serge},
+   title={Algebra},
+   edition={3},
+   series={Graduate Texts in Mathematics},
+   volume={211},
+   publisher={Springer-Verlag},
+   address={New York},
+   date={2002},
+   isbn={978-0-387-95385-4},
+   doi={10.1007/978-1-4613-0041-0}
+}
+\bib{varsos2012algebra}{book}{
+   author={Varsos, Dimitrios},
+   author={Deriziotis, Dimitrios},
+   author={Emmanouil, Ioannis},
+   author={Maliakas, Michalis},
+   author={Talelli, Olympia},
+   title={Mia Eisagogi stin Algebra},
+   language={Greek},
+   edition={3},
+   publisher={Sofia Publications},
+   address={Thessaloniki},
+   date={2012},
+   isbn={978-960-6706-37-0}
+}
+\bib{T}{article}{
+   author={Thome, N{\'e}stor},
+   title={Inequalities and equalities for $l = 2$ (Sylvester), $l = 3$ (Frobenius), and $l > 3$ matrices},
+   journal={Aequationes Mathematicae},
+   volume={90},
+   number={5},
+   date={2016},
+   pages={951--960},
+   doi={10.1007/s00010-016-0412-4},
+}
+\end{biblist}
+\end{bibdiv}
+\end{document}
