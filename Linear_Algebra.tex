@@ -883,6 +883,18 @@ Let $S_n$ denote the $n$-th symmetric group, and for a given $\sigma \in S_n$ le
 \begin{ex}
     Let $A,P\in \mathbb{M}_n(\mathbb{Z})$ with $\det(P)\neq 0$ and $\det(A)=1$. Prove that some power of the matrix $B=P^-1 A P$ has integer entries. 
 \end{ex}
+\begin{ex}
+	Let $p$ be a prime and $X_i\sim \mathrm{Ber}(1/2)$ and independent sequence of random variables meaning it's the outcome of a random experiment with probability $1/2$. Consider the matrix $$
+	\begin{bmatrix}
+	X_0 & X_1 & \cdots & X_{p-1}\\ 
+	X_{p-1} & X_0 & \cdots & X_{p-2}\\ 
+	\vdots & \vdots & \ddots & \vdots \\ 
+	X_1 & X_2 & \cdots & X_0 \\
+	\end{bmatrix}
+	$$
+What is the probability that this matrix is invertible.
+
+\end{ex}
 \newpage
 
 \section{Rank inequalities and subspace inclusions}
@@ -1494,6 +1506,20 @@ Let $A,B \in \mathbb{M}_n(\mathbb{C})$ with $A+I$ invertible and $AB+A=B^2+B$, s
         0 & 1 & a & -a \\
     \end{bmatrix}$ find all rational $a$ such that $A=X^2$ where $X$ has rational entries.
 \end{ex}
+\begin{ex}
+
+    Let $A,B$ be matrices in $\mathbb{M}_n(\mathbb{C})$, $n\geq2$ such that:
+    \begin{itemize}
+        \item $A^2=B^2$
+        \item $A^3+BAB=2I_n$
+    \end{itemize}
+    Prove the following:
+    \begin{itemize}
+        \item $A^3=I_n$
+        \item If $A$ and $B$ share no eigenvalues then $A+B=0$
+    \end{itemize}
+\end{ex}
+
 \newpage
 \section{Diagonal forms}
 \begin{theorem}[Schur's Theorem]
@@ -1522,46 +1548,9 @@ The above does not generalize trivially to more than two matrices and is given o
 \begin{ex}
 Let $A\in \mathbb{M}_n(\mathbb{C})$, prove that there exists an orthonormal basis $U$ such that $A=U^*LU$ such that $L$ is lower triangular and the diagonal elements are all the eigenvalues of $A$.
 \end{ex}
-\begin{ex}
-	Let $p$ be a prime and $X_i\sim \mathrm{Ber}(1/2)$ and independent sequence of random variables meaning it's the outcome of a random experiment with probability $1/2$. Consider the matrix $$
-	\begin{bmatrix}
-	X_0 & X_1 & \cdots & X_{p-1}\\ 
-	X_{p-1} & X_0 & \cdots & X_{p-2}\\ 
-	\vdots & \vdots & \ddots & \vdots \\ 
-	X_1 & X_2 & \cdots & X_0 \\
-	\end{bmatrix}
-	$$
-What is the probability that this matrix is invertible.
 
-\end{ex}
 
-\begin{ex}
 
-    Let $A,B$ be matrices in $\mathbb{M}_n(\mathbb{C})$, $n\geq2$ such that:
-    \begin{itemize}
-        \item $A^2=B^2$
-        \item $A^3+BAB=2I_n$
-    \end{itemize}
-    Prove the following:
-    \begin{itemize}
-        \item $A^3=I_n$
-        \item If $A$ and $B$ share no eigenvalues then $A+B=0$
-    \end{itemize}
-\end{ex}
-\begin{ex}[IMC 2025 P8]
-    Let $A\in \mathbb{M}_n(\mathbb{R})$, define the map $A\mapsto A^R$ that sends a matrix to its counter-clockwise $90^\circ$ rotation. For example $\begin{bmatrix}
-1 & 2 & 3 \\
-4 & 5 & 6 \\
-7 & 8 & 9
-\end{bmatrix}^{R}
-=
-\begin{bmatrix}
-3 & 6 & 9 \\
-2 & 5 & 8 \\
-1 & 4 & 7
-\end{bmatrix}.$\\
-Prove that if $A=A^R$ then for any eigenvalue $\lambda$ of $A$ either $\mathrm{Re}(\lambda)=0$ or $\mathrm{Im}(\lambda)=0$. 
-\end{ex}
 \newpage
 
 \section{Transpose of A Matrix and Inner Products}
@@ -1622,6 +1611,20 @@ Let $A\in \mathbb{M}_n(\mathbb{C})$ and $\alpha\in \mathbb{C}$ such that $A-A^*=
     \item $|\det(A)|\geq |\alpha|^n$.
     \item If $|\det(A)|=|\alpha|^n$ then $A=\alpha I$.
 \end{itemize}
+\end{ex}
+\begin{ex}[IMC 2025 P8]
+    Let $A\in \mathbb{M}_n(\mathbb{R})$, define the map $A\mapsto A^R$ that sends a matrix to its counter-clockwise $90^\circ$ rotation. For example $\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{bmatrix}^{R}
+=
+\begin{bmatrix}
+3 & 6 & 9 \\
+2 & 5 & 8 \\
+1 & 4 & 7
+\end{bmatrix}.$\\
+Prove that if $A=A^R$ then for any eigenvalue $\lambda$ of $A$ either $\mathrm{Re}(\lambda)=0$ or $\mathrm{Im}(\lambda)=0$. 
 \end{ex}
 
 \newpage
@@ -1922,3 +1925,4 @@ If both bases were orthonormal the respective Gramians would be the identity mat
 \end{biblist}
 \end{bibdiv}
 \end{document}
+%% Mind !! Add someting about irreducability.
