@@ -1783,8 +1783,7 @@ Problems involving both $A$ and $A^*$ are usually solved with the spectral theor
     For $\alpha$ being real just take the conjugate transpose on both sides,
     taking the spectral norm on $A^2+(A^*)^2=\alpha AA^*$ we get that $|\alpha|\norm{A}^2=\norm{A^2+(A^*)^2}\leq \norm{A^2}+\norm{(A^*)^2}\leq 2\norm{A}^2 $ so $|\alpha|\leq 2$. For the second part take $x\in \ker(A)$ then $Ax=0$ and $x^*A^*=0$ by application of $x$ and $x^*$ on our equation we get 
     $A^*x=0$ so we can pass to an invrtable matrix. Multiplying by the appropriate inverses we get $A(A^*)^{-1}+(A)^{-1}A^*=\alpha I$, set $B= A^{-1}(A^*)$ this turns to $B+B^*=\alpha I$, this means that $B$ is normal and so we can pass to a diagonal.
-    Let $\lambda$ be an eigenvalue of $B$, we note that $\lambda + \overline{\lambda}=\alpha$ so $2\mathrm{Re}(\lambda)=\alpha$ and so $|\mathrm{Re}(\lambda)|\leq 1$. The normality of $A$ is equivilant to $BB^*=I$ so we will prove that $|\lambda|^2=1$.
-   Let $v$ such that $Bv=\lambda v$ so $A^*v=\lambda Av$ substituting to the original equation we get $A^2(1+\lambda^2)v=A^2\alpha \lambda v$ since $A^2$ is invertible we get $1+\lambda^2= \alpha \lambda$ meaning that $\lambda=\frac{a\pm \sqrt{a^2-4}}{2}$ in either case $\lambda \overline{\lambda}=1$ so $BB^*=I$.
+    The normality of $A$ is equivilant to $BB^*=I$ so we will prove that $|\lambda|^2=1$. Let $v$ such that $Bv=\lambda v$ so $A^*v=\lambda Av$ substituting to the original equation we get $A^2(1+\lambda^2)v=A^2\alpha \lambda v$ since $A^2$ is invertible we get $1+\lambda^2= \alpha \lambda$ meaning that $\lambda=\frac{a\pm \sqrt{a^2-4}}{2}$ in either case $\lambda \overline{\lambda}=1$ so $BB^*=I$.
 \end{example}
 \newpage
 
