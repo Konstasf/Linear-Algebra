@@ -1523,7 +1523,22 @@ This is a consequence of Newton's identities, and it shows that if $\Tr(A^i)=0$ 
         \item if $A$ and $B$ have no common eigenvalue, then $A+B=O$.
     \end{itemize}
 \end{ex}
-
+\begin{ex}[Gazeta Matematic\u{a} 498]\label{GM}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with
+    \[A^2-B^2-I_n=\frac{1}{3}(AB-BA).\]
+    Prove that:
+    \begin{itemize}
+        \item $\det(A^2-B^2)=\det(A-B)\det(A+B)=1$;
+        \item $(AB-BA)^n=O$.
+    \end{itemize}
+\end{ex}
+\begin{ex}[SEEMOUS 2022 P1]\label{S22P1}
+    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with $AB^2A=AB$. Prove that:
+    \begin{itemize}
+        \item $(AB)^2=AB$;
+        \item $(AB-BA)^3=O$.
+    \end{itemize}
+\end{ex}
 \newpage
 \section{Diagonal forms}
 \begin{theorem}[Schur's theorem]
@@ -1585,7 +1600,7 @@ This does not generalize directly to more than two matrices and is included only
 \begin{ex}
     Find all $A\in \mathbb{M}_n(\mathbb{C})$ with $A^{2023}=AA^*-A^*A$.
 \end{ex}
-\begin{ex}
+\begin{ex}[SEEMOUS 2021 P3]\label{S21P3}
     Let $A\in \mathbb{M}_n(\mathbb{C})$ with $(AA^*)^2=A^*A$. Prove that $A^*A=AA^*$.
 \end{ex}
 \begin{ex}
@@ -1623,6 +1638,10 @@ This does not generalize directly to more than two matrices and is included only
     1 & 4 & 7
     \end{bmatrix}.\]
     Prove that if $A=A^R$ then every eigenvalue $\lambda$ of $A$ satisfies $\mathrm{Re}(\lambda)=0$ or $\mathrm{Im}(\lambda)=0$.
+\end{ex}
+\begin{ex}[SEEMOUS 2024 P4]\label{S24P4}
+    Let $n\geq 2$. Find all integers $k\geq1$ for which the following statement holds:
+    \[\textup{``If }A\in \mathbb{M}_n(\mathbb{C})\text{ satisfies } A^kA^*=A, \text{ then } A=A^*.\textup{''} \]
 \end{ex}
 
 \newpage
@@ -1663,7 +1682,7 @@ For the standard inner product on $\mathbb{R}^n$ this is the usual Euclidean len
 \begin{ex}
     Prove that $\norm{A^*A}=\norm{A}^2$ and $\norm{A}=\norm{A^*}$ for the spectral norm.
 \end{ex}
-\begin{ex}[SEEMOUS 2022 P3]
+\begin{ex}[SEEMOUS 2022 P3]\label{S22P3}
     Let $A\in \mathbb{M}_n(\mathbb{C})$ and $\alpha\in \mathbb{C}$, both non-zero, with $A^2+(A^*)^2=\alpha A A^*$. Prove that:
     \begin{itemize}
         \item $\alpha\in \mathbb{R}$ and $|\alpha|\leq 2$;
@@ -1677,24 +1696,19 @@ For the standard inner product on $\mathbb{R}^n$ this is the usual Euclidean len
 
 \newpage
 \section{General ideas and problems}
-Problems involving both $A$ and $A^*$ are usually solved with the spectral theorem, with the Frobenius norm, or with the propositions of the previous sections. We present several problems solved with these ideas.
-\begin{example}\ref{S25P3}
-    Let $A\in \mathbb{M}_n(\mathbb{C})$ with $A^*A^2=AA^*$. Prove that $A^2=A$.
-    \begin{proof}
+Here we provide solutions to some of the proposed problems that may use a combination of the techniques we mentioned so far.
+\begin{example}
+    Exercise \ref{S25P3}\\
         Let $x\in \Ker(A)$. Then $AA^*x=A^*A^2x=0$, so $0=x^*AA^*x=\norm{A^*x}^2$ and $A^*x=0$. Thus $\Ker(A) \subseteq \Ker(A^*)$, and since $\Null(A)=\Null(A^*)$ the two kernels are equal. By Proposition \ref{prop:KA} there is a unitary $U$ with
         \[A=U^*\begin{bmatrix}
             P & O\\
             O & O
         \end{bmatrix}U,\qquad P \text{ invertible},\]
         and $P$ satisfies the same equation $P^*P^2=PP^*$. Taking conjugate transposes gives $(P^*)^2P=PP^*$, hence $P^*P^2=(P^*)^2P$. Cancelling the invertible $P^*$ on the left and $P$ on the right gives $P=P^*$, and then the equation reads $P^3=P^2$, so $P=I$. Therefore $A=U^*(I\oplus O)U$ and $A^2=A$.
-    \end{proof}
 \end{example}
 \begin{example}
-    Let $n\geq 2$. Find all integers $k\geq1$ for which the following statement holds:
-    \[\textup{``If }A\in \mathbb{M}_n(\mathbb{C})\text{ satisfies } A^kA^*=A, \text{ then } A=A^*.\textup{''} \]
-\end{example}
-\begin{proof}
-    First forget that $A$ is a matrix and work with a number $\lambda$ (later it will be an eigenvalue). The equation becomes $\lambda^k\overline{\lambda}=\lambda$. If $\lambda\neq0$ this gives $\lambda^{k-2}|\lambda|^2=1$; taking absolute values, $|\lambda|=1$, and then $\lambda^{k-2}=1$. We want this to force $\lambda$ to be real, i.e.\ $\lambda=\overline{\lambda}$.
+    Exercise \ref{S24P4}\\
+    Firstly forget that $A$ is a matrix and work with a number $\lambda$ (later it will be an eigenvalue). The equation becomes $\lambda^k\overline{\lambda}=\lambda$. If $\lambda\neq0$ this gives $\lambda^{k-2}|\lambda|^2=1$; taking absolute values, $|\lambda|=1$, and then $\lambda^{k-2}=1$. We want this to force $\lambda$ to be real, i.e.\ $\lambda=\overline{\lambda}$.
     \begin{itemize}
         \item $k=1$: $\lambda^{-1}=1$, so $\lambda=1$ is real.
         \item $k=2$: $\lambda|\lambda|^2=\lambda$ holds for \emph{every} $\lambda$ with $|\lambda|=1$, so we may take $\lambda$ non-real.
@@ -1707,15 +1721,8 @@ Problems involving both $A$ and $A^*$ are usually solved with the spectral theor
     Now let $k\in\{1,3,4\}$. If $x\in \Ker(A^*)$ then $Ax=A^kA^*x=0$, so $\Ker(A^*)\subseteq\Ker(A)$ and, comparing dimensions, $\Ker(A^*)=\Ker(A)$. By Proposition \ref{prop:KA} we may assume that $A$ is invertible. Then $A^*=A^{1-k}$ is a polynomial in $A^{-1}$, so it commutes with $A$; thus $A$ is normal, and after a unitary change of basis it is diagonal. Each diagonal entry satisfies the scalar equation, so it is real, and hence $A=A^*$.
 
     The statement holds exactly for $k\in\{1,3,4\}$.
-\end{proof}
-
-\begin{example}
-    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with $AB^2A=AB$. Prove that:
-    \begin{itemize}
-        \item $(AB)^2=AB$;
-        \item $(AB-BA)^3=O$.
-    \end{itemize}
-    \begin{proof}
+\end{example}
+\begin{example}Exercise \ref{S22P1}\\
         Let $X=AB$ and $Y=BA$. The hypothesis says $XY=X$, i.e.\ $X(Y-I)=O$. By Sylvester's inequality in kernel form, $n=\Null(X(Y-I))\leq\Null(X)+\Null(Y-I)$. Since $\Rank(AB-I)=\Rank(BA-I)$ we have $\Null(Y-I)=\Null(X-I)$, so $n\leq \Null(X)+\Null(X-I)$. As $\Ker(X) \cap \Ker(X-I)=\{0\}$, this gives $\mathbb{C}^n=\Ker(X)\oplus\Ker(X-I)$. So $X$ acts as $0$ on one summand and as the identity on the other, hence $X^2=X$.
 
         For the second part, using $X^2=X$ and $XY=X$,
@@ -1726,21 +1733,11 @@ Problems involving both $A$ and $A^*$ are usually solved with the spectral theor
             (X-Y)^4&=(X-Y)^2(X-Y)^2=-Y(X-Y)^3=-Y^3(X-Y)=-Y^2(X-Y),
         \end{align*}
         so $(X-Y)^4=-(X-Y)^3$. Hence the minimal polynomial of $X-Y$ divides $t^4+t^3=t^3(t+1)$, and the eigenvalues of $X-Y$ lie in $\{0,-1\}$. Since $\Tr(X-Y)=\Tr(AB-BA)=0$, the eigenvalue $-1$ cannot occur. So the minimal polynomial divides $t^3$, i.e.\ $(AB-BA)^3=O$.
-    \end{proof}
     \begin{remark}
         When we introduce new matrices $X,Y$ in a problem, we may lose sight of relations between them that are not obvious from the new notation: here the nullity of $Y-I$, the identity $Y^3=Y^2$, and the trace of $X-Y$. Be wary when substituting!
     \end{remark}
 \end{example}
-\begin{example}[Gazeta Matematic\u{a} 498]
-    Let $A,B\in \mathbb{M}_n(\mathbb{C})$ with
-    \[A^2-B^2-I_n=\frac{1}{3}(AB-BA).\]
-    Prove that:
-    \begin{itemize}
-        \item $\det(A^2-B^2)=\det(A-B)\det(A+B)=1$;
-        \item $(AB-BA)^n=O$.
-    \end{itemize}
-\end{example}
-\begin{proof}
+\begin{example}Exercise \ref{GM}\\
     The determinants in the statement suggest looking at
     \[(A-B)(A+B)=A^2-B^2+(AB-BA),\qquad (A+B)(A-B)=A^2-B^2-(AB-BA).\]
     Set $X=A-B$, $Y=A+B$ and $C=AB-BA$. Using the hypothesis $A^2-B^2=I+\frac13C$,
@@ -1764,22 +1761,20 @@ Problems involving both $A$ and $A^*$ are usually solved with the spectral theor
     0 & 0 & 0 & 0 & 1
     \end{bmatrix}.\]
     In that basis $A^2-B^2=\frac12(XY+YX)$ is upper triangular with $1$'s on the diagonal, so $\det(A^2-B^2)=1$; and $C=\frac12(XY-YX)$ is strictly upper triangular, hence nilpotent, so $C^n=O$.
-\end{proof}
-\begin{example}
-    Let $A\in \mathbb{M}_n(\mathbb{C})$ with $(AA^*)^2=A^*A$. Show that $A^*A=AA^*$.
 \end{example}
-\begin{proof}
+\begin{example}Exercise \ref{S21P3}\\
     Let $x\in \Ker(A)$. Then $(AA^*)^2x=A^*Ax=0$, so $0=x^*(AA^*)(AA^*)x=\norm{AA^*x}^2$ and $AA^*x=0$; by the same trick $0=x^*AA^*x=\norm{A^*x}^2$, so $A^*x=0$. Hence $\Ker(A)\subseteq\Ker(A^*)$, the kernels are equal, and by Proposition \ref{prop:KA} we may assume that $A$ is invertible.
 
     Now $AA^*$ and $A^*A$ are Hermitian with positive eigenvalues, and they have the same eigenvalues. The equation $(AA^*)^2=A^*A$ shows that if $\mu$ is an eigenvalue of $AA^*$ then $\mu^2$ is an eigenvalue of $A^*A$, hence of $AA^*$. A finite set of positive numbers closed under squaring is $\{1\}$, so all eigenvalues of $AA^*$ equal $1$. Since $AA^*$ is unitarily diagonalizable, $AA^*=I$, and then $A^*A=(AA^*)^2=I=AA^*$.
-\end{proof}
-\begin{example}\ref{P}
+
+\end{example}
+\begin{example}Exercise \ref{P}\\
     Since $\det(A^p+I)$ is zero we get that we must have an eigenvalue such that $\zeta^p+1=$ but $\zeta+1\neq 0$. Since the matrix is over $\mathbb{Q}$
      both it's characteristic and minimal polynomials are over $\mathbb{Q}$ considering the dimension is $p$ we argue that $\Phi_{2p}(x)=\Phi_p(-x)| m_A(x)$ so this implies that amongst the $p$ possible eigenvalues of $A$
       $p-1$ of them are the non-real roots of $\Phi_p(-x)$, denote as $\lambda$ the other eigenvalue of $A$, we know that $\tr(A)=\lambda + \sum\limits_{\Phi_p(\zeta)=0} \zeta=\lambda+1$ by Vieta's formulas. All that is left is to invoke the spectral 
       mapping theorem to argue that $\lambda + 1$ is an eigenvalue of $A+I$.
 \end{example}
-\begin{example}
+\begin{example}Exercise \ref{S22P3}\\
     For $\alpha$ being real just take the conjugate transpose on both sides,
     taking the spectral norm on $A^2+(A^*)^2=\alpha AA^*$ we get that $|\alpha|\norm{A}^2=\norm{A^2+(A^*)^2}\leq \norm{A^2}+\norm{(A^*)^2}\leq 2\norm{A}^2 $ so $|\alpha|\leq 2$. For the second part take $x\in \ker(A)$ then $Ax=0$ and $x^*A^*=0$ by application of $x$ and $x^*$ on our equation we get 
     $A^*x=0$ so we can pass to an invrtable matrix. Multiplying by the appropriate inverses we get $A(A^*)^{-1}+(A)^{-1}A^*=\alpha I$, set $B= A^{-1}(A^*)$ this turns to $B+B^*=\alpha I$, this means that $B$ is normal and so we can pass to a diagonal.
